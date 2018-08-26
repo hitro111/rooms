@@ -9,6 +9,15 @@
 #define analogPin4 4
 #define analogPin5 5
 
+#define Load_1      2
+
+#define Led_1_OK    9
+#define Led_2_OK    8
+#define Led_3_OK    6
+#define Led_4_OK    4
+#define Led_5_OK    1
+#define Led_6_OK    0  
+
 #include <Ethernet.h>
 #include <MQTTClient.h>
 #include <avr/wdt.h>
@@ -27,14 +36,14 @@ void sendState();
 
 void green()
 {
-  digitalWrite(5, LOW);
-  digitalWrite(6, HIGH);
+  digitalWrite(3, LOW);
+  digitalWrite(5, HIGH);
 }
 
 void red()
 {
-  digitalWrite(6, LOW);
-  digitalWrite(5, HIGH);
+  digitalWrite(5, LOW);
+  digitalWrite(3, HIGH);
 }
 
 bool manualOk = false;
@@ -46,10 +55,16 @@ void __init()
 }
 
 void setup() {
-  Serial.begin(9600);
   pinMode(resetPin, OUTPUT);
+  pinMode (Load_1,    OUTPUT);
+  pinMode (Led_1_OK , OUTPUT);
+  pinMode (Led_2_OK , OUTPUT);
+  pinMode (Led_3_OK , OUTPUT);
+  pinMode (Led_4_OK , OUTPUT);
+  pinMode (Led_5_OK , OUTPUT);
+  pinMode (Led_6_OK , OUTPUT);
   digitalWrite(resetPin, LOW);
-  pinMode(6, OUTPUT);
+  pinMode(3, OUTPUT);
   pinMode(5, OUTPUT);
   __init();
   Ethernet.begin(mac, ip);
@@ -58,17 +73,14 @@ void setup() {
 }
 
 void connect() {
-  Serial.print("connecting...");
   int n = 0;
   while (!client.connect("sgag")) {
-    Serial.print(".");
     delay(1000);
     n++;
     if (n > 5)
       hard_Reboot();
   }
-
-  Serial.println("\nconnected!");
+  
   client.subscribe("space/reset");
   client.subscribe("space/ping/in");
   client.subscribe("space/gagarin/in");
@@ -124,20 +136,24 @@ void messageReceived(String topic, String payload, char * bytes, unsigned int le
 void sendState()
 {
   bool wasFirstCall = firstCall;
-  int analogValue0 = analogRead(analogPin0); // цифра 1 // 166
-  int analogValue1 = analogRead(analogPin1); // цифра 2 // 252
-  int analogValue2 = analogRead(analogPin2); // цифра 0 // 89
-  int analogValue3 = analogRead(analogPin3); // цифра 4 // 323
-  int analogValue4 = analogRead(analogPin4); // цифра 6 // 511
-  int analogValue5 = analogRead(analogPin5); // цифра 1 // 166
+  int analogValue0 = analogRead(analogPin0); // цифра 1 // 233 либо 309
+  int analogValue1 = analogRead(analogPin1); // цифра 2 // 393
+  int analogValue2 = analogRead(analogPin2); // цифра 0 // 183
+  int analogValue3 = analogRead(analogPin3); // цифра 4 // 456
+  int analogValue4 = analogRead(analogPin4); // цифра 6 // 510
+  int analogValue5 = analogRead(analogPin5); // цифра 1 // 233 либо 309
 
   if (
-    130 < analogValue0 & analogValue0 < 200 & // цифра 1 // 166
-    200 < analogValue1 & analogValue1 < 295 & // цифра 2 // 252
-    50 < analogValue2 & analogValue2 < 130 & // цифра 0 // 89
-    295 < analogValue3 & analogValue3 < 450 & // цифра 4 // 323
-    450 < analogValue4 & analogValue4 < 650 & // цифра 6 // 511
-    130 < analogValue5 & analogValue5 < 200 // цифра 1 // 166
+    (210 < analogValue0 && analogValue0 < 270 || // цифра 1 // 233 либо 309
+     270 < analogValue0 && analogValue0 < 350) && // цифра 1 // 233 либо 309
+
+    250 < analogValue1 && analogValue1 < 425 && // цифра 2 // 393
+    100 < analogValue2 && analogValue2 < 210 && // цифра 0 // 183
+    425 < analogValue3 && analogValue3 < 485 && // цифра 4 // 456
+    485 < analogValue4 && analogValue4 < 600 && // цифра 6 // 510
+
+    (210 < analogValue5 && analogValue5 < 270 ||  // цифра 1 // 233 либо 309
+     270 < analogValue5 && analogValue5 < 350)    // цифра 1 // 233 либо 309
   ) {
     if (!ok || firstCall)
     {
@@ -171,5 +187,71 @@ void sendState()
     updatePending = false;
     wasFirstCall = false;
   }
-}
+  if ( // цифра 1 в первом гнезде
+    (210 < analogValue0 && analogValue0 < 270 || // цифра 1 // 233 либо 309
+     270 < analogValue0 && analogValue0 < 350)   // цифра 1 // 233 либо 309
+  )
+  {
+    digitalWrite(Led_1_OK, HIGH);  
+  }
+  else 
+  { 
+    digitalWrite(Led_1_OK, LOW); 
+  }
 
+if ( // цифра 2 в втором гнезде
+    250 < analogValue1 && analogValue1 < 425 // цифра 2 // 393
+  )
+  {
+    digitalWrite(Led_2_OK, HIGH);  
+  }
+  else 
+  {  
+    digitalWrite(Led_2_OK, LOW); 
+  }
+
+  if ( // цифра 0 в третьем гнезде
+    100 < analogValue2 && analogValue2 < 210 // цифра 0 // 183
+  )
+  {
+    digitalWrite(Led_3_OK, HIGH);  
+  }
+  else 
+  {
+    digitalWrite(Led_3_OK, LOW);  
+  }
+
+  if ( // цифра 4 в четвертом гнезде
+    425 < analogValue3 && analogValue3 < 485 // цифра 4 // 456
+  )
+  {
+    digitalWrite(Led_4_OK, HIGH);  
+  }
+  else 
+  {
+    digitalWrite(Led_4_OK, LOW);   
+  }
+
+  if ( // цифра 6 в пятом гнезде
+    485 < analogValue4 && analogValue4 < 600 // цифра 6 // 510
+  )
+  {
+    digitalWrite(Led_5_OK, HIGH); 
+  }
+  else 
+  {
+    digitalWrite(Led_5_OK, LOW);  
+  }
+
+  if (  // цифра 1 в шестом гнезде
+    (210 < analogValue5 && analogValue5 < 270 || // цифра 1 // 233 либо 309
+     270 < analogValue5 && analogValue5 < 350)   // цифра 1 // 233 либо 309
+  )
+  {
+    digitalWrite(Led_6_OK, HIGH);  
+  }
+  else 
+  {
+    digitalWrite(Led_6_OK, LOW);  
+  }
+}

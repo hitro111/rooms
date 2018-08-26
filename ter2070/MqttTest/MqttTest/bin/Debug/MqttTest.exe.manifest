@@ -1,0 +1,380 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<asmv1:assembly xsi:schemaLocation="urn:schemas-microsoft-com:asm.v1 assembly.adaptive.xsd" manifestVersion="1.0" xmlns:asmv1="urn:schemas-microsoft-com:asm.v1" xmlns="urn:schemas-microsoft-com:asm.v2" xmlns:asmv2="urn:schemas-microsoft-com:asm.v2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:co.v1="urn:schemas-microsoft-com:clickonce.v1" xmlns:asmv3="urn:schemas-microsoft-com:asm.v3" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#" xmlns:co.v2="urn:schemas-microsoft-com:clickonce.v2">
+  <asmv1:assemblyIdentity name="MqttTest.exe" version="1.0.0.13" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="msil" type="win32" />
+  <application />
+  <entryPoint>
+    <assemblyIdentity name="MqttTest" version="1.4.0.0" language="neutral" processorArchitecture="msil" />
+    <commandLine file="MqttTest.exe" parameters="" />
+  </entryPoint>
+  <trustInfo>
+    <security>
+      <applicationRequestMinimum>
+        <PermissionSet Unrestricted="true" ID="Custom" SameSite="site" />
+        <defaultAssemblyRequest permissionSetReference="Custom" />
+      </applicationRequestMinimum>
+      <requestedPrivileges xmlns="urn:schemas-microsoft-com:asm.v3">
+        <!--
+          UAC Manifest Options
+          If you want to change the Windows User Account Control level replace the 
+          requestedExecutionLevel node with one of the following.
+
+        <requestedExecutionLevel  level="asInvoker" uiAccess="false" />
+        <requestedExecutionLevel  level="requireAdministrator" uiAccess="false" />
+        <requestedExecutionLevel  level="highestAvailable" uiAccess="false" />
+
+         If you want to utilize File and Registry Virtualization for backward 
+         compatibility then delete the requestedExecutionLevel node.
+    -->
+        <requestedExecutionLevel level="asInvoker" uiAccess="false" />
+      </requestedPrivileges>
+    </security>
+  </trustInfo>
+  <dependency>
+    <dependentOS>
+      <osVersionInfo>
+        <os majorVersion="5" minorVersion="1" buildNumber="2600" servicePackMajor="0" />
+      </osVersionInfo>
+    </dependentOS>
+  </dependency>
+  <dependency>
+    <dependentAssembly dependencyType="preRequisite" allowDelayedBinding="true">
+      <assemblyIdentity name="Microsoft.Windows.CommonLanguageRuntime" version="4.0.30319.0" />
+    </dependentAssembly>
+  </dependency>
+  <dependency>
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Charlotte.dll" size="16384">
+      <assemblyIdentity name="Charlotte" version="0.1.50.0" language="neutral" processorArchitecture="msil" />
+      <hash>
+        <dsig:Transforms>
+          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+        </dsig:Transforms>
+        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+        <dsig:DigestValue>P9Kp3byPsiKQYD1LveZ16SXYHk+1L510gMMduLj8ITw=</dsig:DigestValue>
+      </hash>
+    </dependentAssembly>
+  </dependency>
+  <dependency>
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="M2Mqtt.dll" size="45056">
+      <assemblyIdentity name="M2Mqtt" version="3.6.0.0" language="neutral" processorArchitecture="msil" />
+      <hash>
+        <dsig:Transforms>
+          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+        </dsig:Transforms>
+        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+        <dsig:DigestValue>97RBPdBKDhbFhVOEolgu8IfV7RhUipE9tec5u2AGAvs=</dsig:DigestValue>
+      </hash>
+    </dependentAssembly>
+  </dependency>
+  <dependency>
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="MqttTest.exe" size="41984">
+      <assemblyIdentity name="MqttTest" version="1.4.0.0" language="neutral" processorArchitecture="msil" />
+      <hash>
+        <dsig:Transforms>
+          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+        </dsig:Transforms>
+        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+        <dsig:DigestValue>ccw3n40kuocCPCcAZRaKHUNPE0pgtsM27Qqz25j86W4=</dsig:DigestValue>
+      </hash>
+    </dependentAssembly>
+  </dependency>
+  <dependency>
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="NAudio.dll" size="471040">
+      <assemblyIdentity name="NAudio" version="1.7.3.0" language="neutral" processorArchitecture="msil" />
+      <hash>
+        <dsig:Transforms>
+          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+        </dsig:Transforms>
+        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+        <dsig:DigestValue>My2cr5wBcqq9f/jKkJln0x3Bcym2S2XR+xO4TGylpyk=</dsig:DigestValue>
+      </hash>
+    </dependentAssembly>
+  </dependency>
+  <file name="MqttTest.exe.config" size="184">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>FqWy0dfMmRS85zkU1NlW07p6LsNOPUHodvLiZcFdgJY=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Resources\Sounds\air_fail.wav" size="1287094">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>gEtcWEtStd2VGcBvrV5oOFzatyxSa1mWDawL12UHX0Y=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Resources\Sounds\air_ok.wav" size="1520718">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>u5nW001qNg7RYtA/K8WqnQjQzSy9irIBZ+w16GCHPb8=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Resources\Sounds\background.mp3" size="18474870">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>y5toO+Vktf23PN/iBcF8ewXwxTZFyiPLtugiAF3aoc0=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Resources\Sounds\box_click.wav" size="83148">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>1++v7QCY2ml6uCP2/VS3YHdicOl3bU3KrJBsNchCpIs=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Resources\Sounds\cpu_open.wav" size="1059918">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>vA+Xd3ch1m6jU/umLwr6t8qeTLu/dMy4ZwkoVJDVaqg=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Resources\Sounds\creodoor_ok.wav" size="617550">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>AUHI25z/iRK5HlstWAOKrcfPUE4sEkA2W2AThqs0DME=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Resources\Sounds\d\d_15_alert.wav" size="978424">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>LwGbaqMcZPBlf7wR4LHRsWwK6DD1eRC9LfU6QDvQ4Oo=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Resources\Sounds\d\d_7_alert.wav" size="835684">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>e6PTuheMZ5SO4Myd1W7OPY9gASgRKb/RSvL5WOKbcgU=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Resources\Sounds\d\d_air_30_alert.wav" size="1039048">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>gD+zBQBiIbsdmZa/xH98x4gCMIfkrqMu1OAfixBjVto=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Resources\Sounds\d\d_air_alert.wav" size="800460">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>vzL6AEpF4xoor5F4EHSv+3YmRtr7CYMQv0YB6KK23MU=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Resources\Sounds\d\d_energy_40.wav" size="1403152">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>WKFMyQ57wHXIQr2s3OnXCSfJFJvWU22Ok4ZfqWxJ0/Q=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Resources\Sounds\d\d_energy_alert.wav" size="918836">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>oJ4o7aSZrkagf5a0hmgHAa1+szGXIxCaT5bIO4lm/L8=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Resources\Sounds\d\d_engine_10.wav" size="1857192">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>AJ+3ajsyfGfrDZFLrug1Iee6e4fuf0LYWW5dPDa5hoQ=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Resources\Sounds\d\d_game_fail.wav" size="2162568">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>ug6ONKuIrrY8niCbiVBcUkOk1fatwf2w0VJXEHCB1v4=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Resources\Sounds\d\d_game_fail_VAR1.wav" size="2093424">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>45isXxErJnrq6Jas0whgGcXEv0DLqCwsDcMeR+zHzXk=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Resources\Sounds\d\d_main_open.wav" size="2215904">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>ZeYncqlNGO0VBeQJcX8qPBJzZpZZTJCDsqitpIm3Teo=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Resources\Sounds\d\d_sputnik.wav" size="2167996">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>ZyWVQk5oHVIu5jEjXg5EaGvrdaKB4dn/gJ5Xv+x1Vwk=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Resources\Sounds\d\d_success.wav" size="1891512">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>4rnI0ykJzmy0EOHcc+InymcIuwDcyCgOeM4U/3X1HOQ=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Resources\Sounds\d\d_voice_ok.wav" size="3418496">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>0B5iNlspS1nZrHaoIsE4+GmYz/zsM5rkjHr5UHsy00E=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Resources\Sounds\engine_error.wav" size="25190">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>CorSmtFges2PaeOd8l15/scmq/Dv0AxPe4/nBYb43Pk=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Resources\Sounds\engine_start.wav" size="7062168">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>uO5xGRhoKa65lVIFgiXF79CFDMpM5MpxW+dJQCAivBY=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Resources\Sounds\fail.mp3" size="3245265">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>8AHePH0FzD4RutDv3Zd4a+juPjF4+LriXqwDkhs7dzo=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Resources\Sounds\fail.wav" size="14281722">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>2fG1XT8Gix9RQjIf3mM3D9eKrXSevGNy5Uixre6PyUk=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Resources\Sounds\power_fail.wav" size="1327182">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>st0kENv5myYpqTkguKlX7bN50Dp7qkxQtUtcErLQ+Js=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Resources\Sounds\power_ok_fuses.wav" size="458718">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>nrxUzPaxfsVM5vDMxuPb6PZu9TcP0zRaf0o0nnMfzHY=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Resources\Sounds\power_ok_manipulator.wav" size="1589838">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>XKLi3t+NhziukUjyOq6M0qEi8u3qtSXngE92ZDiSn30=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Resources\Sounds\sputnik_ok.wav" size="1566798">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>4mme5x+MiiCDoANLQbrgC2vajrPdvCtpKVfJKU15ehM=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Resources\Sounds\success.mp3" size="1728164">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>+fLmQM6au0RWQMRICogI96XkP/9T6oVOC5sPiF6M4iQ=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Resources\Sounds\success.wav" size="12704334">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>fgN2c8cJjV+X8ljtH4Xx2PZRrbU0LBnCk2c0jOFsKMU=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Resources\Sounds\voice_fail.wav" size="598430">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>xATHM+pWIsVo4q7JVzl6PZ2kOLjkviun1rc9iZDBxYM=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Resources\Sounds\voice_ok.wav" size="1129038">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>XUFTdaQ6WW2I/lylXedGDVCk5QbsGe7RB6Ej+Jvq46c=</dsig:DigestValue>
+    </hash>
+  </file>
+</asmv1:assembly>

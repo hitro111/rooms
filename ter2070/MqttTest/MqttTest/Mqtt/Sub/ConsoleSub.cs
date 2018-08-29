@@ -12,7 +12,7 @@ namespace MqttTest.Mqtt.Sub
         {
             _mainForm = mainForm;
 
-            On["space/console/out"] = _ =>
+            On["ter2070/console/device"] = _ =>
             {
                 _mainForm.Invoke((MethodInvoker)(() => _mainForm.WriteLineToConsole(_.Message)));
             };

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Globalization;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using Flurl.Http;
 using MqttTest.Mqtt.Pub;
 using MqttTest.Mqtt.Sub;
 
@@ -9,6 +11,8 @@ namespace MqttTest
     public partial class QuestTest : Form
     {
         #region SUBS/PUBS
+
+        private readonly AllSub _allSub;
 
         readonly ConsoleSub _consoleSub;
         readonly ResetSub _resetSub;
@@ -43,7 +47,15 @@ namespace MqttTest
 
         public QuestTest()
         {
+            var res = "http://testingpol.azurewebsites.net/Home/Add".PostJsonAsync(new
+            {
+                Topic = "App",
+                Payload = "Form created"
+            }).Result;
+
             InitializeComponent();
+
+            _allSub = new AllSub(this);
 
             _consoleSub = new ConsoleSub(this);
             _resetSub = new ResetSub(this);
@@ -54,6 +66,8 @@ namespace MqttTest
             _door2Sub = new Door2Sub(this);
             _colorSub = new ColorSub(this);
             _door1Sub = new Door1Sub(this);
+
+            _allSub.Run();
 
             _consoleSub.Run();
             _resetSub.Run();
@@ -94,6 +108,7 @@ namespace MqttTest
         private void QuestTest_FormClosing(object sender, FormClosingEventArgs e)
         {
             Log.Instance.Do("FORM CLOSING");
+            _allSub.Disconnect();
             _consoleSub.Disconnect();
             _resetSub.Disconnect();
             _secPub.Disconnect();
@@ -141,6 +156,7 @@ namespace MqttTest
         public void LazersAlert()
         {
             alarmLbl.Text = DateTime.Now.ToString(CultureInfo.InvariantCulture);
+            _door2Pub.AlarmOn();
             _colorPub.Enable();
         }
 
@@ -243,6 +259,7 @@ namespace MqttTest
 
         public void ColorOk()
         {
+            _door2Pub.AlarmOff();
             _lazersActivatePub.Activate();
             _colorPub.Disable();
             _secPub.Enable();
@@ -251,6 +268,7 @@ namespace MqttTest
 
         public void Door2Opened()
         {
+            _lazersActivatePub.Deactivate();
             door2Lbl.Text = DateTime.Now.ToString(CultureInfo.InvariantCulture);
         }
     }

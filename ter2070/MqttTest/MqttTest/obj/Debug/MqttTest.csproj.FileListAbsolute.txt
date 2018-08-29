@@ -164,10 +164,16 @@ D:\Work\spaceroom\repo\rooms\ter2070\MqttTest\MqttTest\bin\Debug\NAudio.xml
 D:\Work\spaceroom\repo\rooms\ter2070\MqttTest\MqttTest\obj\Debug\MqttTest.QuestTest.resources
 D:\Work\spaceroom\repo\rooms\ter2070\MqttTest\MqttTest\obj\Debug\MqttTest.Properties.Resources.resources
 D:\Work\spaceroom\repo\rooms\ter2070\MqttTest\MqttTest\obj\Debug\MqttTest.csproj.GenerateResource.Cache
-D:\Work\spaceroom\repo\rooms\ter2070\MqttTest\MqttTest\obj\Debug\MqttTest.csproj.CoreCompileInputs.cache
 D:\Work\spaceroom\repo\rooms\ter2070\MqttTest\MqttTest\obj\Debug\MqttTest.exe.manifest
 D:\Work\spaceroom\repo\rooms\ter2070\MqttTest\MqttTest\obj\Debug\MqttTest.application
 D:\Work\spaceroom\repo\rooms\ter2070\MqttTest\MqttTest\obj\Debug\MqttTest.exe
 D:\Work\spaceroom\repo\rooms\ter2070\MqttTest\MqttTest\obj\Debug\MqttTest.pdb
+D:\Work\spaceroom\repo\rooms\ter2070\MqttTest\MqttTest\bin\Debug\Flurl.dll
+D:\Work\spaceroom\repo\rooms\ter2070\MqttTest\MqttTest\bin\Debug\Flurl.Http.dll
+D:\Work\spaceroom\repo\rooms\ter2070\MqttTest\MqttTest\bin\Debug\Newtonsoft.Json.dll
+D:\Work\spaceroom\repo\rooms\ter2070\MqttTest\MqttTest\bin\Debug\Flurl.xml
+D:\Work\spaceroom\repo\rooms\ter2070\MqttTest\MqttTest\bin\Debug\Flurl.Http.xml
+D:\Work\spaceroom\repo\rooms\ter2070\MqttTest\MqttTest\bin\Debug\Newtonsoft.Json.xml
 D:\Work\spaceroom\repo\rooms\ter2070\MqttTest\MqttTest\obj\Debug\MqttTest.csprojAssemblyReference.cache
+D:\Work\spaceroom\repo\rooms\ter2070\MqttTest\MqttTest\obj\Debug\MqttTest.csproj.CoreCompileInputs.cache
 D:\Work\spaceroom\repo\rooms\ter2070\MqttTest\MqttTest\obj\Debug\MqttTest.csproj.CopyComplete

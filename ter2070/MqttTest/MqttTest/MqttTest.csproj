@@ -68,12 +68,24 @@
       <HintPath>..\packages\Charlotte.0.1.50\lib\Charlotte.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Flurl, Version=2.8.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Flurl.2.8.0\lib\net40\Flurl.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Flurl.Http, Version=2.3.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Flurl.Http.2.3.2\lib\net45\Flurl.Http.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="M2Mqtt, Version=3.6.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\M2Mqtt.3.6\lib\net45\M2Mqtt.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NAudio, Version=1.7.3.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\NAudio.1.7.3\lib\net35\NAudio.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System">
@@ -123,6 +135,7 @@
     <Compile Include="Mqtt\Pub\ColorPub.cs" />
     <Compile Include="Mqtt\Pub\SecPub.cs" />
     <Compile Include="Mqtt\Sub\Box2SimpleSub.cs" />
+    <Compile Include="Mqtt\Sub\AllSub.cs" />
     <Compile Include="Mqtt\Sub\ConsoleSub.cs" />
     <Compile Include="Mqtt\Sub\Box1BlinkSub.cs" />
     <Compile Include="Mqtt\Sub\ColorSub.cs" />

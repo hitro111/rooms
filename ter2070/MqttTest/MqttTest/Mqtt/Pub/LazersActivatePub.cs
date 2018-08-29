@@ -14,5 +14,10 @@ namespace MqttTest.Mqtt.Pub
         {
             Publish("ter2070/tlazers/activate/device", "1");
         }
+
+        public void Deactivate()
+        {
+            Publish("ter2070/tlazers/activate/device", "0"); 
+        }
     }
 }

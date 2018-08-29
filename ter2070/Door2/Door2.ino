@@ -10,8 +10,8 @@ PUBLISH:
 "1" - door opened
 */
 
-#define TRACE
-#define NO_SERVER
+//#define TRACE
+//#define NO_SERVER
 #define resetPin 7
 
 #include <Ethernet.h>
@@ -149,6 +149,7 @@ void loop() {
       lcd.print("O\1ce\2: o\1\2p\3\1");
       client.publish("ter2070/tdoor2/server", "1");
       digitalWrite (DOOR_LOCK, LOW);
+      state = Open;
       break;
     case Open:
       break;
@@ -219,5 +220,3 @@ void hard_Reboot()
 {
   digitalWrite(resetPin, HIGH);
 }
-
-

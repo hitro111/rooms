@@ -69,11 +69,15 @@ void setup() {
   Serial.begin(9600);
 #endif
 
+  pinMode(Lamp_1CH, OUTPUT);
+  pinMode(Lamp_2CH, OUTPUT);
+
+  lightOn();
+
   for (int i = 0; i < L_CT; ++i)
   {
     pinMode(L[i], OUTPUT);
   }
-
 
   pinMode(9, INPUT);
 
@@ -82,8 +86,8 @@ void setup() {
 
 void lightOn()
 {
-  digitalWrite(Lamp_1CH, HIGH);
-  digitalWrite(Lamp_2CH, HIGH);
+  analogWrite(Lamp_1CH, 100);
+  analogWrite(Lamp_2CH, 100);
 }
 
 void lightOff()
@@ -170,6 +174,12 @@ void loop() {
 #endif
 
       lightOn();
+      switchLazers(false);
+
+      //TODO remove temp
+      switchLazers(true);
+      
+      
       state = Stopped;
       break;
     case Stopped:
@@ -180,7 +190,7 @@ void loop() {
       Serial.println("Activating");
 #endif
 
-      lightOn();
+      lightOff();
 
       switchLazers(true);
 
@@ -204,11 +214,11 @@ void loop() {
 #endif
 
       switchLazers(false);
-      
+
 #ifndef NO_SERVER
       client.publish("ter2070/tlazers/alert/server", "1");
 #endif
-      
+
       state = Stopping;
       break;
   }
@@ -235,7 +245,20 @@ void messageReceived(String topic, String payload, char * bytes, unsigned int le
 
     if (topic == "ter2070/tlazers/activate/device")
     {
-      state = Activating;
+      if (payload == "1")
+      {
+#ifndef NO_SERVER
+        client.publish("ter2070/console/device", "activating");
+#endif
+        state = Activating;
+      }
+      else if (payload == "0")
+      {
+#ifndef NO_SERVER
+        client.publish("ter2070/console/device", "stopping");
+#endif
+        state = Stopping;
+      }
     }
 
     if (topic == "ter2070/tlazers/ignore/device")
@@ -270,4 +293,3 @@ void hard_Reboot()
 {
   digitalWrite(resetPin, HIGH);
 }
-

@@ -8,7 +8,7 @@
  * "ter2070/tcolor/server"
  *    "1" => success
  */
-//#define _TRACE
+#define _TRACE
 //#define NO_SERVER
 
 #define resetPin 7
@@ -510,4 +510,3 @@ void hard_Reboot()
 {
   digitalWrite(resetPin, HIGH);
 }
-

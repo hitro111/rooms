@@ -7,7 +7,6 @@
 #define SIZE 8
 #define BTN A1
 #define NOT_SET 250
-#define SMOKE_PIN 4
 #define LED_ON LOW
 #define LED_OFF HIGH
 
@@ -141,7 +140,6 @@ void setup() {
   in.begin(0x25);
 
   out.begin(0x26);
-  pinMode(SMOKE_PIN, OUTPUT);
 
   for (int i = 0; i < SIZE; ++i)
   {
@@ -522,7 +520,6 @@ void ProcessFinished()
   client.publish("space/console/out", msg);
 
   client.publish("ter2070/sec/out", "1");
-  digitalWrite(SMOKE_PIN, HIGH);
 
 #ifdef NO_SERVER
   gameState = OutCircleInit;

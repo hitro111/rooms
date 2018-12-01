@@ -20,6 +20,7 @@ namespace MqttTest
                 Log.Instance.Do("APP STARTING...");
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
+
                 Application.Run(new QuestTest());
             }
             catch (Exception ex)

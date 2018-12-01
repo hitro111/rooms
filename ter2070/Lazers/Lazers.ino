@@ -1,5 +1,6 @@
 //#define NO_SERVER
 //#define TRACE
+//#define DIAGNOSTICS
 #define resetPin 7
 
 #ifndef NO_SERVER
@@ -28,15 +29,20 @@ MQTTClient client;
 #define Lamp_1CH 6
 #define Lamp_2CH 5
 
-#define L_CT 6
-//
+#if defined(TRACE) || defined(DIAGNOSTICS)
+const int L_CT = 4;
+int L[L_CT] = {4, 8, 3, 2};
+int R[L_CT] = {A5, A4, A3, A2};
+#else
+const int L_CT = 6;
 int L[L_CT] = {4, 8, 3, 2, 1, 0};
 int R[L_CT] = {A5, A4, A3, A2, A1, A0};
+#endif
 
 int OFF_VAL[L_CT];
 int ON_VAL[L_CT];
 bool IGNORE[L_CT];
-int RISE_LIMIT = 200;
+int RISE_LIMIT = 180;
 
 enum State
 {
@@ -65,8 +71,9 @@ void setup() {
   client.begin("192.168.0.91", net);
 #endif
 
-#ifdef TRACE
+#if defined(TRACE) || defined(DIAGNOSTICS)
   Serial.begin(9600);
+  Serial.println("4 lazers only, serial enabled");
 #endif
 
   pinMode(Lamp_1CH, OUTPUT);
@@ -113,7 +120,46 @@ void setIgnore(int i)
   digitalWrite(L[i], LOW);
 }
 
+#ifdef DIAGNOSTICS
+bool prompted = false;
+#endif
+
 void loop() {
+
+#ifdef DIAGNOSTICS
+  lightOff();
+  if (!prompted)
+  {
+    Serial.println("Type any symbol to read values");
+    prompted = true;
+  }
+
+  if (Serial.available())
+  {
+    while (Serial.available()) Serial.read();
+    prompted = false;
+    switchLazers(false);
+    delay(1000);
+    Serial.println("Lazers off");
+    for (int i = 0; i < L_CT; ++i)
+    {
+      Serial.print(i);
+      Serial.print(": ");
+      Serial.println(analogRead(R[i]));
+    }
+
+    switchLazers(true);
+    delay(1000);
+    Serial.println("Lazers on");
+    for (int i = 0; i < L_CT; ++i)
+    {
+      Serial.print(i);
+      Serial.print(": ");
+      Serial.println(analogRead(R[i]));
+    }
+    delay(200);
+  }
+#endif
 
 #ifndef NO_SERVER
   client.loop();
@@ -141,7 +187,7 @@ void loop() {
       delay(100);
 
       switchLazers(false);
-      delay(1000);
+      delay(500);
 
       for (int i = 0; i < L_CT; ++i)
       {
@@ -176,10 +222,6 @@ void loop() {
       lightOn();
       switchLazers(false);
 
-      //TODO remove temp
-      switchLazers(true);
-      
-      
       state = Stopped;
       break;
     case Stopped:
@@ -202,8 +244,16 @@ void loop() {
       {
         if (IGNORE[i])
           continue;
-        if (analogRead(R[i]) > ON_VAL[i] + RISE_LIMIT)
+        if (analogRead(R[i]) > OFF_VAL[i] - RISE_LIMIT)
         {
+#ifndef NO_SERVER
+          String s = "lazer: ";
+          s += i;
+          s += " (pin: ";
+          s += R[i];
+          s += ") triggered alarm";
+          client.publish("ter2070/logs/server", s);
+#endif
           state = Alert;
         }
       }
@@ -248,14 +298,14 @@ void messageReceived(String topic, String payload, char * bytes, unsigned int le
       if (payload == "1")
       {
 #ifndef NO_SERVER
-        client.publish("ter2070/console/device", "activating");
+        client.publish("ter2070/logs/server", "lazers activating");
 #endif
         state = Activating;
       }
       else if (payload == "0")
       {
 #ifndef NO_SERVER
-        client.publish("ter2070/console/device", "stopping");
+        client.publish("ter2070/logs/server", "lazers stopping");
 #endif
         state = Stopping;
       }

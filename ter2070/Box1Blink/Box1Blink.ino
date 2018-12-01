@@ -1,7 +1,7 @@
 //pwd = 2 (Yellow) 7 (Orange) 8 (green) 4 (red)
 //
 //#define TRACE
-//#define NO_SERVER
+#define NO_SERVER
 #define resetPin 7
 
 #include <Ethernet.h>
@@ -21,6 +21,7 @@ MQTTClient client;
 #define LED_G 5
 #define LED_R 3
 #define LOCK 2
+#define BUZ_PIN 1
 
 LiquidCrystal_I2C lcd(0x27, 20, 4);
 
@@ -252,6 +253,9 @@ void setup() {
   pinMode(LED_R, OUTPUT);
 
   pinMode(LOCK, OUTPUT);
+  pinMode(BUZ_PIN, OUTPUT);
+
+  digitalWrite(BUZ_PIN, LOW);
 
   customKeypad.addEventListener(keypadEvent);
   customKeypad.setHoldTime(5000);
@@ -308,6 +312,11 @@ void loop() {
 
     lcd.setCursor(curPos, 0);
     lcd.print(customKey);
+
+    digitalWrite(BUZ_PIN, HIGH);
+    delay(5);
+    digitalWrite(BUZ_PIN, LOW);
+
     curPos++;
 
     if (curPos == PWD_SIZE)
@@ -322,8 +331,10 @@ void loop() {
       }
       else
       {
-
+        digitalWrite(BUZ_PIN, HIGH);
         writeWrongPwd();
+        digitalWrite(BUZ_PIN, LOW);
+        
         resetAll();
       }
     }

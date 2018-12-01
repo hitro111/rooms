@@ -127,25 +127,8 @@
     <Compile Include="Audio\Space\AudioDeviceMgr.cs" />
     <Compile Include="Audio\Space\RoomAudioManager.cs" />
     <Compile Include="Log.cs" />
-    <Compile Include="Mqtt\Pub\Door1Pub.cs" />
-    <Compile Include="Mqtt\Pub\LazersActivatePub.cs" />
-    <Compile Include="Mqtt\Pub\LazersInitPub.cs" />
-    <Compile Include="Mqtt\Pub\LazersIgnorePub.cs" />
-    <Compile Include="Mqtt\Pub\Door2Pub.cs" />
-    <Compile Include="Mqtt\Pub\ColorPub.cs" />
-    <Compile Include="Mqtt\Pub\SecPub.cs" />
-    <Compile Include="Mqtt\Sub\Box2SimpleSub.cs" />
-    <Compile Include="Mqtt\Sub\AllSub.cs" />
-    <Compile Include="Mqtt\Sub\ConsoleSub.cs" />
-    <Compile Include="Mqtt\Sub\Box1BlinkSub.cs" />
-    <Compile Include="Mqtt\Sub\ColorSub.cs" />
-    <Compile Include="Mqtt\Sub\Door1Sub.cs" />
-    <Compile Include="Mqtt\Sub\ResetSub.cs" />
-    <Compile Include="Mqtt\Sub\LazersIgnoreSub.cs" />
-    <Compile Include="Mqtt\Sub\LazersAlarmSub.cs" />
-    <Compile Include="Mqtt\Sub\Door2Sub.cs" />
-    <Compile Include="Mqtt\Sub\SecSub.cs" />
-    <Compile Include="Mqtt\Pub\ResetPub.cs" />
+    <Compile Include="Mqtt\Commands.cs" />
+    <Compile Include="Mqtt\Events.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -153,6 +136,7 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
+    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>

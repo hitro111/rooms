@@ -30,6 +30,13 @@
         {
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.door1PwrLbl = new System.Windows.Forms.Label();
+            this.block2PwrLbl = new System.Windows.Forms.Label();
+            this.block1PwrLbl = new System.Windows.Forms.Label();
+            this.tumblerLbl = new System.Windows.Forms.Label();
+            this.door2Lbl = new System.Windows.Forms.Label();
+            this.door1Open = new System.Windows.Forms.Button();
+            this.startBtn = new System.Windows.Forms.Button();
             this.alarmLbl = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.laz6Btn = new System.Windows.Forms.Button();
@@ -52,9 +59,7 @@
             this.consoleTb = new System.Windows.Forms.TextBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.button9 = new System.Windows.Forms.Button();
-            this.startBtn = new System.Windows.Forms.Button();
-            this.door1Open = new System.Windows.Forms.Button();
-            this.door2Lbl = new System.Windows.Forms.Label();
+            this.genPwrLbl = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPage4.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -74,6 +79,11 @@
             // 
             // tabPage4
             // 
+            this.tabPage4.Controls.Add(this.genPwrLbl);
+            this.tabPage4.Controls.Add(this.door1PwrLbl);
+            this.tabPage4.Controls.Add(this.block2PwrLbl);
+            this.tabPage4.Controls.Add(this.block1PwrLbl);
+            this.tabPage4.Controls.Add(this.tumblerLbl);
             this.tabPage4.Controls.Add(this.door2Lbl);
             this.tabPage4.Controls.Add(this.door1Open);
             this.tabPage4.Controls.Add(this.startBtn);
@@ -102,6 +112,71 @@
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "tabPage4";
             this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // door1PwrLbl
+            // 
+            this.door1PwrLbl.AutoSize = true;
+            this.door1PwrLbl.Location = new System.Drawing.Point(25, 422);
+            this.door1PwrLbl.Name = "door1PwrLbl";
+            this.door1PwrLbl.Size = new System.Drawing.Size(32, 17);
+            this.door1PwrLbl.TabIndex = 31;
+            this.door1PwrLbl.Text = "167";
+            // 
+            // block2PwrLbl
+            // 
+            this.block2PwrLbl.AutoSize = true;
+            this.block2PwrLbl.Location = new System.Drawing.Point(25, 392);
+            this.block2PwrLbl.Name = "block2PwrLbl";
+            this.block2PwrLbl.Size = new System.Drawing.Size(32, 17);
+            this.block2PwrLbl.TabIndex = 30;
+            this.block2PwrLbl.Text = "112";
+            // 
+            // block1PwrLbl
+            // 
+            this.block1PwrLbl.AutoSize = true;
+            this.block1PwrLbl.Location = new System.Drawing.Point(25, 365);
+            this.block1PwrLbl.Name = "block1PwrLbl";
+            this.block1PwrLbl.Size = new System.Drawing.Size(32, 17);
+            this.block1PwrLbl.TabIndex = 29;
+            this.block1PwrLbl.Text = "180";
+            // 
+            // tumblerLbl
+            // 
+            this.tumblerLbl.AutoSize = true;
+            this.tumblerLbl.Location = new System.Drawing.Point(22, 334);
+            this.tumblerLbl.Name = "tumblerLbl";
+            this.tumblerLbl.Size = new System.Drawing.Size(46, 17);
+            this.tumblerLbl.TabIndex = 28;
+            this.tumblerLbl.Text = "label4";
+            // 
+            // door2Lbl
+            // 
+            this.door2Lbl.AutoSize = true;
+            this.door2Lbl.Location = new System.Drawing.Point(234, 284);
+            this.door2Lbl.Name = "door2Lbl";
+            this.door2Lbl.Size = new System.Drawing.Size(46, 17);
+            this.door2Lbl.TabIndex = 27;
+            this.door2Lbl.Text = "label4";
+            // 
+            // door1Open
+            // 
+            this.door1Open.Location = new System.Drawing.Point(138, 284);
+            this.door1Open.Name = "door1Open";
+            this.door1Open.Size = new System.Drawing.Size(75, 23);
+            this.door1Open.TabIndex = 26;
+            this.door1Open.Text = "откр 1";
+            this.door1Open.UseVisualStyleBackColor = true;
+            this.door1Open.Click += new System.EventHandler(this.door1Open_Click);
+            // 
+            // startBtn
+            // 
+            this.startBtn.Location = new System.Drawing.Point(11, 284);
+            this.startBtn.Name = "startBtn";
+            this.startBtn.Size = new System.Drawing.Size(75, 23);
+            this.startBtn.TabIndex = 25;
+            this.startBtn.Text = "START";
+            this.startBtn.UseVisualStyleBackColor = true;
+            this.startBtn.Click += new System.EventHandler(this.startBtn_Click);
             // 
             // alarmLbl
             // 
@@ -318,34 +393,14 @@
             this.button9.UseVisualStyleBackColor = true;
             this.button9.Click += new System.EventHandler(this.button9_Click);
             // 
-            // startBtn
+            // genPwrLbl
             // 
-            this.startBtn.Location = new System.Drawing.Point(11, 284);
-            this.startBtn.Name = "startBtn";
-            this.startBtn.Size = new System.Drawing.Size(75, 23);
-            this.startBtn.TabIndex = 25;
-            this.startBtn.Text = "START";
-            this.startBtn.UseVisualStyleBackColor = true;
-            this.startBtn.Click += new System.EventHandler(this.startBtn_Click);
-            // 
-            // door1Open
-            // 
-            this.door1Open.Location = new System.Drawing.Point(138, 284);
-            this.door1Open.Name = "door1Open";
-            this.door1Open.Size = new System.Drawing.Size(75, 23);
-            this.door1Open.TabIndex = 26;
-            this.door1Open.Text = "откр 1";
-            this.door1Open.UseVisualStyleBackColor = true;
-            this.door1Open.Click += new System.EventHandler(this.door1Open_Click);
-            // 
-            // door2Lbl
-            // 
-            this.door2Lbl.AutoSize = true;
-            this.door2Lbl.Location = new System.Drawing.Point(234, 284);
-            this.door2Lbl.Name = "door2Lbl";
-            this.door2Lbl.Size = new System.Drawing.Size(46, 17);
-            this.door2Lbl.TabIndex = 27;
-            this.door2Lbl.Text = "label4";
+            this.genPwrLbl.AutoSize = true;
+            this.genPwrLbl.Location = new System.Drawing.Point(25, 450);
+            this.genPwrLbl.Name = "genPwrLbl";
+            this.genPwrLbl.Size = new System.Drawing.Size(24, 17);
+            this.genPwrLbl.TabIndex = 32;
+            this.genPwrLbl.Text = "66";
             // 
             // QuestTest
             // 
@@ -394,6 +449,11 @@
         private System.Windows.Forms.Button startBtn;
         private System.Windows.Forms.Button door1Open;
         private System.Windows.Forms.Label door2Lbl;
+        private System.Windows.Forms.Label tumblerLbl;
+        private System.Windows.Forms.Label door1PwrLbl;
+        private System.Windows.Forms.Label block2PwrLbl;
+        private System.Windows.Forms.Label block1PwrLbl;
+        private System.Windows.Forms.Label genPwrLbl;
     }
 }
 

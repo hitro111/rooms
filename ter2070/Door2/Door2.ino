@@ -1,13 +1,13 @@
 /*
-SUBSCRIBE:
-"ter2070/tdoor2/device"
-"a" = alarm
-"n" = no alarm
-"o" = open manually
+  SUBSCRIBE:
+  "ter2070/tdoor2/device"
+  "a" = alarm
+  "n" = no alarm
+  "o" = open manually
 
-PUBLISH:
-"ter2070/tdoor2/server"
-"1" - door opened
+  PUBLISH:
+  "ter2070/tdoor2/server"
+  "1" - door opened
 */
 
 //#define TRACE
@@ -157,7 +157,8 @@ void loop() {
       isAlarm = true;
       lcd.clear();
       lcd.setCursor(0, 0);
-      lcd.print("TPEBO\1A!");
+      lcd.print("ALARM!");
+      state = Waiting;
       break;
   }
 }
@@ -182,11 +183,14 @@ void messageReceived(String topic, String payload, char * bytes, unsigned int le
     {
       if (payload == "a") //alarm on
       {
-        isAlarm = true;
+        state = Alarm;
       }
       else if (payload == "n") //alarm off
       {
         isAlarm = false;
+        lcd.clear();
+        lcd.setCursor(0, 0);                 // Устанавливаем курсор в начало 1 строки
+        lcd.print("O\1ce\2: \4\5\2p\3\1");   // Отсек: закрыт
       }
       else if (payload == "o") //open manually
       {

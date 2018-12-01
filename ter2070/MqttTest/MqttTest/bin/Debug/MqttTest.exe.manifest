@@ -90,14 +90,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="MqttTest.exe" size="48128">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="MqttTest.exe" size="60416">
       <assemblyIdentity name="MqttTest" version="1.4.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>F1Rs+PTYFfCPW9Z6mq+a0Wd9RXmURkwMd+M8Ex0zSd4=</dsig:DigestValue>
+        <dsig:DigestValue>S8SdmtIyEXlVrTp52s/kSDacn6IfdEx6Wq7GIDKhR+k=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

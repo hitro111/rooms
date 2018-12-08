@@ -16,10 +16,11 @@ byte ip[] = { 192, 168, 0, 54 }; // <- change to match your network
 EthernetClient net;
 MQTTClient client;
 
-#define PWD_SIZE 4
+#define PWD_SIZE 6
 #define LOCK 2
 #define LED_G 5
 #define LED_R 3
+#define BUZ_PIN 1
 
 LiquidCrystal_I2C lcd(0x27, 20, 4);
 
@@ -136,7 +137,7 @@ void drawLockOpen()
 }
 
 void drawLockOpening()
-{  
+{
   lcd.setCursor(14, 0);
   lcd.print("     ");
   lcd.setCursor(14, 1);
@@ -161,9 +162,8 @@ void clearLockImg()
   lcd.print("     ");
   lcd.setCursor(15, 3);
   lcd.print("     ");
-  lcd.setCursor(15, 4);
-  lcd.print("     ");
 }
+
 
 void setClosedText()
 {
@@ -187,6 +187,10 @@ void setOpenText()
   lcd.print("\1p\2");
   lcd.write(byte(0));
   lcd.print("o");
+
+  drawLockOpening();
+
+  delay(300);
 
   drawLockOpen();
 
@@ -249,6 +253,9 @@ void setup() {
   lcd.clear();
 
   pinMode(LOCK, OUTPUT);
+  pinMode(BUZ_PIN, OUTPUT);
+
+  digitalWrite(BUZ_PIN, LOW);
 
   customKeypad.addEventListener(keypadEvent);
   customKeypad.setHoldTime(5000);
@@ -316,6 +323,11 @@ void loop() {
 
     lcd.setCursor(curPos, 0);
     lcd.print(customKey);
+
+    digitalWrite(BUZ_PIN, HIGH);
+    delay(5);
+    digitalWrite(BUZ_PIN, LOW);
+
     curPos++;
 
     if (curPos == PWD_SIZE)
@@ -330,8 +342,9 @@ void loop() {
       }
       else
       {
-
+        digitalWrite(BUZ_PIN, HIGH);
         writeWrongPwd();
+        digitalWrite(BUZ_PIN, LOW);
         resetAll();
       }
     }

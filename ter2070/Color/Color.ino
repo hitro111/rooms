@@ -8,7 +8,7 @@
    "ter2070/tcolor/server"
       "1" => success
 */
-//#define _TRACE
+//#define TRACE
 //#define NO_SERVER
 
 #define resetPin 7
@@ -314,6 +314,9 @@ void ProcessNotStarted()
 
   if (millis() - lastBlink > blinkDelay)
   {
+#ifdef TRACE
+    Serial.println("blink NS");
+#endif
     SwitchAll(blinkOn);
     lastBlink = millis();
     blinkOn = !blinkOn;
@@ -504,7 +507,11 @@ void ProcessSuccess()
 void ProcessFinished()
 {
   __init();
-  gameEnabled = true;
+  gameEnabled = true; //init game disabled, we need enabled (override)
+
+#ifdef TRACE
+  Serial.println("ProcessFinished exit");
+#endif
 }
 
 void ProcessFailed()
@@ -538,7 +545,16 @@ void ProcessFailed()
 }
 
 
-void messageReceived(String topic, String payload, char * bytes, unsigned int length) {
+void messageReceived(String topic, String payload, char * bytes, unsigned int length)
+{
+  /*
+    #ifdef TRACE
+    Serial.print("Topic: ");
+    Serial.print(topic);
+    Serial.print(" , payload: ");
+    Serial.println(payload);
+    #endif
+  */
   if (topic.startsWith("ter"))
   {
     if (payload == "r")
@@ -557,6 +573,7 @@ void messageReceived(String topic, String payload, char * bytes, unsigned int le
 
     if (topic == "ter2070/tcolor/device")
     {
+
       if (payload == "e")
       {
         gameEnabled = true;
@@ -580,6 +597,10 @@ void connect() {
       hard_Reboot();
   }
 
+
+#ifdef TRACE
+  //client.subscribe("#");
+#endif
   client.subscribe("ter2070/reset");
   client.subscribe("ter2070/ping/in");
   client.subscribe("ter2070/tcolor/reset");

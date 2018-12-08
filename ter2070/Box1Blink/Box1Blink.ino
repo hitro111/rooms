@@ -1,7 +1,7 @@
 //pwd = 2 (Yellow) 7 (Orange) 8 (green) 4 (red)
 //
 //#define TRACE
-#define NO_SERVER
+//#define NO_SERVER
 #define resetPin 7
 
 #include <Ethernet.h>

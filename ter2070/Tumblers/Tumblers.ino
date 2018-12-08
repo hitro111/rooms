@@ -13,7 +13,7 @@
 PCF8574 pcf1;
 PCF8574 pcf2;
 
-bool state[16] = {0};
+bool state[16] = {-1};
 #define TREMBL 30
 
 #define ACC "ttumblr"
@@ -25,6 +25,10 @@ MQTTClient client;
 
 void __init()
 {
+  for (int i = 0; i < 16; ++i)
+  {
+    state[i] = -1;
+  }
 }
 
 bool pcfRead(int i)
@@ -167,4 +171,3 @@ void hard_Reboot()
 {
   digitalWrite(resetPin, HIGH);
 }
-

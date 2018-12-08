@@ -1,5 +1,5 @@
 #define TRACE
-//#define PCF
+#define PCF
 //#define NO_SERVER
 #define resetPin 7
 
@@ -12,6 +12,7 @@
 #include <nfc.h>
 #include <Wire.h>
 #include "LedControl.h"
+#include <Bounce2.h>
 
 #define DEV_ID '2'
 LedControl lc = LedControl(9, 8, 4, 1);
@@ -19,6 +20,9 @@ LedControl lc = LedControl(9, 8, 4, 1);
 #define SOUND_PIN 2
 #define BATTERY_LIGHT_PIN 6
 #define HALL_PIN A1 //HIGH -> LOW
+#define HALL_STEP 2
+
+Bounce debouncer = Bounce();
 
 NFC_Module nfc;
 u8 buf[32], sta;
@@ -76,7 +80,9 @@ void updatePower()
 
 void __init()
 {
+#ifdef TRACE
   Serial.println(F("init"));
+#endif
   // Initialize the MAX7219 device
   lc.shutdown(0, false); // Enable display
   lc.setIntensity(0, 10); // Set brightness level (0 is min, 15 is max)
@@ -88,13 +94,15 @@ void __init()
 }
 
 bool state[16] = {0};
-int mapped[16] = {15, 0, 12, 5, 4, 7, 9, 1, 3, 8, 2, 11, 13, 14, 6, 10 };
+int mappedPos[16] = {15, 0, 12, 5, 4, 7, 9, 1, 3, 8, 2, 11, 13, 14, 6, 10 };
+bool inverseVal[16] = {0, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0};
+bool tumblersDone = false;
 
 bool allOk()
 {
   for (int i = 0; i < 16; ++i)
   {
-    if (!state[i]) return false;
+    if (state[i]) return false;
   }
   return true;
 }
@@ -136,14 +144,15 @@ void setup() {
       break;
     }
 #ifdef TRACE
-    Serial.print(F("Didn't find PN53x board"));
+    Serial.println(F("Didn't find PN53x board..."));
 #endif
     retries--;
-
+    delay(500);
+    
     if (retries == 0)
     {
 #ifdef TRACE
-      Serial.print(F("Didn't find PN53x board"));
+      Serial.println(F("Reboot (NFC)"));
 #endif
       digitalWrite(resetPin, HIGH);
     }
@@ -160,6 +169,8 @@ void setup() {
   pinMode(SOUND_PIN, OUTPUT);
   pinMode(BATTERY_LIGHT_PIN, OUTPUT);
   pinMode(HALL_PIN, INPUT);
+  debouncer.attach(HALL_PIN);
+  debouncer.interval(5); // interval in ms
 
 
   digitalWrite (LIGHT_PIN, LOW);
@@ -175,8 +186,9 @@ void setup() {
 #endif
 
   __init();
-
+#ifdef TRACE
   Serial.println(F("setup OK"));
+#endif
 }
 
 bool isBatteryDirty = false;
@@ -292,26 +304,39 @@ unsigned long long lastUpdate = 0;
 bool powerLeft;
 int found = -1;
 bool toCard = false;
+bool hallPrevVal = HIGH;
 void loop() {
 #ifndef NO_SERVER
   client.loop();
 
   if (!client.connected()) {
     connect();
+#ifdef TRACE
     Serial.println(F("connected"));
-  }
-
-  if (millis() - lastMillis > 1000) {
-    lastMillis = millis();
-    client.publish("/hello", "world");
+#endif
   }
 #endif
 
+  if (!tumblersDone)
+  {
+    clearDisplay();
+    return;
+  }
+
+  
+  //handling hall sensor
+  debouncer.update();
+  int hallVal = debouncer.read();
+  if (hallVal == LOW && hallVal != hallPrevVal)
+  {
+    power += HALL_STEP;
+  }
+  hallPrevVal = hallVal;
+  //..
+  
+  
   setPower();
-
-
   sta = nfc.InListPassiveTarget(buf);
-/*
   if (sta && buf[0] == 4)
   {
     //nfc.puthex(buf + 1, buf[0]);
@@ -382,15 +407,9 @@ void loop() {
     startBattery = 0;
     clearBattery();
   }
-  */
 }
 
 void messageReceived(String topic, String payload, char * bytes, unsigned int length) {
-  Serial.print(F("WTF: "));
-  Serial.print(topic);
-  Serial.print(F(" "));
-  Serial.println(payload);
-  client.publish("WTF/" + topic, payload);
   if (topic.startsWith("ter"))
   {
     if (topic.equals("ter2070/e/block1Pwr"))
@@ -444,21 +463,32 @@ void messageReceived(String topic, String payload, char * bytes, unsigned int le
 
     if (topic.equals("ter2070/ttumblr/server"))
     {
-
+#ifdef TRACE
       Serial.println(payload);
+#endif
       long tumblers = payload.toInt();
 
       for (int i = 0; i < 16; ++i)
       {
 #ifdef PCF
-        pcfWrite(mapped[i], tumblers & (1L << i));
+        bool val = tumblers & (1L << i);
+        if (inverseVal[i])
+          val = !val;
+        pcfWrite(mappedPos[i], val);
 #endif
-        state[i] = tumblers & (1L << i);
-      }
+        state[mappedPos[i]] = val;
 
-      if (allOk)
+        Serial.print(state[i]);
+        Serial.print(", ");
+      }
+      Serial.println();
+
+      tumblersDone = allOk();
+      if (tumblersDone)
       {
+#ifdef TRACE
         Serial.println(F("ALL OK"));
+#endif
       }
     }
   }
@@ -474,8 +504,6 @@ void connect() {
     if (n > 5)
       hard_Reboot();
   }
-
-  client.subscribe("/hello");
 
   client.subscribe("ter2070/e/block1Pwr");
   client.subscribe("ter2070/e/block2Pwr");

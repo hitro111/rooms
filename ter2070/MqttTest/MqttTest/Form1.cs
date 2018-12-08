@@ -80,6 +80,10 @@ namespace MqttTest
             alarmLbl.Text = DateTime.Now.ToString(CultureInfo.InvariantCulture);
             _commands.Door2_AlarmOn();
             _commands.Color_Enable();
+
+            Thread.Sleep(100);
+
+            _commands.Color_Enable();
         }
 
         public void WriteSimpleBoxOk()

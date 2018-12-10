@@ -99,9 +99,9 @@ void loop() {
     impulseTime = pulseIn(pins[i][0], HIGH); // Замеряем длину импульса
     distance_sm = impulseTime / 58; // Пересчитываем в сантиметры
 #ifdef TRACE
-    Serial.print(i);
-    Serial.print(": ");
-    Serial.println(distance_sm);
+    //Serial.print(i);
+    //Serial.print(": ");
+    //Serial.println(distance_sm);
 #endif
     if (distance_sm > MIN_TRIG_DST && distance_sm < MAX_TRIG_DST)
     {

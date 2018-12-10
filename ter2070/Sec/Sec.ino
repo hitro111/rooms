@@ -9,6 +9,7 @@
 #define NOT_SET 250
 #define LED_ON LOW
 #define LED_OFF HIGH
+#define LIGHT_PIN 5
 
 #define ProcessOutCircleInit_delay 100
 #define ProcessOutCircleRunning_delay 50
@@ -38,6 +39,20 @@ PCF8574 in; // Светодиоды 1-8
 PCF8574 out; // Светодиоды 9-16
 Bounce btn = Bounce();
 
+void lightOn()
+{
+  analogWrite(LIGHT_PIN, 255);
+}
+
+void lightLow()
+{
+  analogWrite(LIGHT_PIN, 10);
+}
+
+void lightOff()
+{
+  digitalWrite(LIGHT_PIN, LOW);
+}
 
 enum State
 {
@@ -132,6 +147,9 @@ void setup() {
   pinMode(resetPin, OUTPUT);
   digitalWrite(resetPin, LOW);
 
+  pinMode(LIGHT_PIN, OUTPUT);
+  lightOn();
+
   Serial.begin(9600);
 #ifndef NO_SERVER
   Ethernet.begin(mac, ip);
@@ -208,6 +226,21 @@ void messageReceived(String topic, String payload, char * bytes, unsigned int le
       __init();
       gameState = OutCircleInit;
     }
+    else if (topic == "ter2070/tlazers/activate/device")
+    {
+      if (payload == "1")
+      {
+        lightLow();
+      }
+      else if (payload == "0")
+      {
+        lightOn();
+      }
+    }
+    else if (topic == "ter2070/tlazers/alert/server")
+    {
+      lightOn();
+    }
   }
 }
 
@@ -230,6 +263,8 @@ void connect() {
   client.subscribe("ter2070/ping/in");
   client.subscribe("ter2070/sec/reset");
   client.subscribe("ter2070/sec/in");
+  client.subscribe("ter2070/tlazers/activate/device");
+  client.subscribe("ter2070/tlazers/alert/server");
   // client.unsubscribe("/example");
 }
 
@@ -559,4 +594,3 @@ void SetAllIn(bool on)
     in.clear();
   }
 }
-

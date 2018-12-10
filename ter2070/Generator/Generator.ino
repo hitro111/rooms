@@ -414,36 +414,32 @@ void messageReceived(String topic, String payload, char * bytes, unsigned int le
   {
     if (topic.equals("ter2070/e/block1Pwr"))
     {
-      client.publish("AAA", "A");
       //ignore self events
       char dev_id = payload[0];
       if (dev_id == DEV_ID)
         return;
-      client.publish("AAA", "Z");
+        
       payload.remove(0, 1);
       values[0] = payload.toInt();
     }
 
     if (topic.equals("ter2070/e/block2Pwr"))
     {
-      client.publish("BBB", "A");
       //ignore self events
       char dev_id = payload[0];
       if (dev_id == DEV_ID)
         return;
-      client.publish("BBB", "Z");
+        
       payload.remove(0, 1);
       values[1] = payload.toInt();
     }
 
     if (topic.equals("ter2070/e/genPwr"))
     {
-      client.publish("CCC", "A");
       //ignore self events
       char dev_id = payload[0];
       if (dev_id == DEV_ID)
         return;
-      client.publish("CCC", "Z");
       payload.remove(0, 1);
       power = payload.toInt();
     }

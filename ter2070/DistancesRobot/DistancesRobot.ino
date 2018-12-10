@@ -5,11 +5,22 @@
 #include <Ethernet.h>
 #include <MQTTClient.h>
 #include <avr/wdt.h>
+#include <SoftwareSerial.h>
+#include <DFPlayer_Mini_Mp3.h>
+
+#include <Servo.h>
+
+SoftwareSerial mySerial(20, 2); // RX, TX
+
 #define AMOUNT 4
 
 #define ACC "tdistance"
 byte mac[] = { 0x09, 0xAD, 0xBE, 0x01, 0xAD, 0xBE };
 byte ip[] = { 192, 168, 0, 59 }; // <- change to match your network
+
+#define HEAD_SRV_PIN 4
+
+Servo headServo;          // Севра отвечающая за поворот головы (30налево 50центр 70право)
 
 //[][0] - echo
 //[][1] - trig
@@ -21,11 +32,19 @@ byte pins[AMOUNT][2] = {
 };
 
 byte leds[AMOUNT] = {14, 15, 16, 17};
+byte servoVals[AMOUNT] = {5, 30, 60, 90};
 unsigned int impulseTime = 0;
 unsigned int distance_sm = 0;
 
 #define MAX_TRIG_DST 150
 #define MIN_TRIG_DST 6
+
+#define ACTIVATE_TIME 3000
+#define DEACTIVATE_TIME 10000
+#define NOISE_TIME 200
+
+unsigned long long lastIn[AMOUNT] = {0}, lastOut[AMOUNT] = {0}, lastActivated[AMOUNT] = {0}, minVal, buf;
+int minInd;
 
 EthernetClient net;
 MQTTClient client;
@@ -56,9 +75,12 @@ void setup() {
     digitalWrite(pins[i][1], LOW);
   }
 
+  headServo.attach(HEAD_SRV_PIN);
+  headServo.write(45); // прямо
   __init();
 }
 
+bool isActivated = false;
 void loop() {
 #ifndef NO_SERVER
   client.loop();
@@ -83,14 +105,69 @@ void loop() {
 #endif
     if (distance_sm > MIN_TRIG_DST && distance_sm < MAX_TRIG_DST)
     {
+      if (lastIn[i] <= lastOut[i])  //if was not in
+      {
+        lastIn[i] = millis();
+#ifdef TRACE
+        Serial.print("IN: ");
+        Serial.println(i);
+#endif
+      }
       digitalWrite(leds[i], HIGH);
     }
     else
     {
+      if (lastOut[i] <= lastIn[i]) //if was not out
+      {
+        lastOut[i] = millis();
+#ifdef TRACE
+        Serial.print("OUT: ");
+        Serial.print(i);
+#endif
+      }
       digitalWrite(leds[i], LOW);
     }
+  }
 
-    delay(20);
+
+  bool allDeactivated = true;
+  for (int i = 0; i < AMOUNT; ++i)
+  {
+    if (lastIn[i] > lastOut[i] && millis() - lastIn[i] > ACTIVATE_TIME) //in later than out + time passed since in > ACTIVATE_TIME
+    {
+      isActivated = true;
+#ifdef TRACE
+      Serial.print(i);
+      Serial.print(": ");
+      Serial.println("activated loop");
+#endif
+    }
+
+    if (lastOut[i] <= lastIn[i] || (lastOut[i] > lastIn[i] && lastOut[i] - lastIn[i] < DEACTIVATE_TIME)) //any in > out or not much time passed after out
+    {
+      allDeactivated = false;
+    }
+  }
+
+  isActivated = isActivated && !allDeactivated;
+
+  if (isActivated)
+  {
+    minVal = 4294967295;
+    for (int i = 0; i < AMOUNT; ++i)
+    {
+      buf = millis() - lastIn[i];
+      if (buf > NOISE_TIME && minVal > buf)
+      {
+        minVal = buf;
+        minInd = i;
+      }
+    }
+
+#ifdef TRACE
+    Serial.println("writing servo");
+#endif
+    headServo.write(servoVals[minInd]);
   }
 }
 
@@ -133,4 +210,3 @@ void hard_Reboot()
 {
   digitalWrite(resetPin, HIGH);
 }
-

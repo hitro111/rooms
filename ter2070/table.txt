@@ -1,12 +1,14 @@
-NAME	 	IP	MAC	ACC		DEV ID
-Sec	 	51	01	tsec
-Color	 	52	02	tcolor
-Box1Blink 	53	03	tboxblink
-Box2Simple 	54	04	tbox2simple
-Lazers		55	05	tlazers
-Door2		56	06	tdoor2
-Door1		57	07	tdoor1		1
-Tumblers	58	08	ttumblr
-DistancesRobot	59	09	tdistance
-Generator	61	11	tgen		2
-Server						0
+NAME			IP		MAC		ACC				DEV ID(pwr pubslisher)
+Sec	 			51		01		tsec
+Color	 		52		02		tcolor
+Box1Blink 		53		03		tboxblink
+Box2Simple 		54		04		tbox2simple
+Lazers			55		05		tlazers
+Door2			56		06		tdoor2
+Door1			57		07		tdoor1			1
+Tumblers		58		08		ttumblr
+DistancesRobot	59		09		tdistance
+Generator		61		11		tgen			2
+Server											0
+Smoke			60		10		tsmoke
+Sounds			62		12		tsound			3

@@ -122,7 +122,7 @@ void loop() {
         lastOut[i] = millis();
 #ifdef TRACE
         Serial.print("OUT: ");
-        Serial.print(i);
+        Serial.println(i);
 #endif
       }
       digitalWrite(leds[i], LOW);

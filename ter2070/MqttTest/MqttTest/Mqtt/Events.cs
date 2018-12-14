@@ -139,7 +139,7 @@ namespace MqttTest.Mqtt
 
         public void InitPower()
         {
-            Door1Power(167);
+            Door1Power(1670);
             Block1Power(180);
             Block2Power(112);
             GeneratorPower(66);

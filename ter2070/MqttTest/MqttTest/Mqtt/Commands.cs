@@ -106,6 +106,20 @@ namespace MqttTest.Mqtt
         }
 
         #endregion
+
+        #region Smoke
+
+        public void Smoke_On()
+        {
+            Publish("ter2070/c/smoke", "1");
+        }
+
+        public void Smoke_Off()
+        {
+            Publish("ter2070/c/smoke", "0");
+        }
+
+        #endregion
     }
 
     public static class Consts

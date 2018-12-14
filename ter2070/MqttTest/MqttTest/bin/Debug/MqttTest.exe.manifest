@@ -14,16 +14,16 @@
       </applicationRequestMinimum>
       <requestedPrivileges xmlns="urn:schemas-microsoft-com:asm.v3">
         <!--
-          Параметры манифеста UAC
-          При необходимости изменить уровень контроля учетных записей Windows замените узел 
-          requestedExecutionLevel одним из следующих значений.
+          UAC Manifest Options
+          If you want to change the Windows User Account Control level replace the 
+          requestedExecutionLevel node with one of the following.
 
         <requestedExecutionLevel  level="asInvoker" uiAccess="false" />
         <requestedExecutionLevel  level="requireAdministrator" uiAccess="false" />
         <requestedExecutionLevel  level="highestAvailable" uiAccess="false" />
 
-         Если вы хотите использовать виртуализацию файлов и реестра для обратной 
-         совместимости, удалите узел requestedExecutionLevel.
+         If you want to utilize File and Registry Virtualization for backward 
+         compatibility then delete the requestedExecutionLevel node.
     -->
         <requestedExecutionLevel level="asInvoker" uiAccess="false" />
       </requestedPrivileges>
@@ -90,14 +90,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="MqttTest.exe" size="60928">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="MqttTest.exe" size="61440">
       <assemblyIdentity name="MqttTest" version="1.4.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>RhsCoMsYB9yiKfzxlq/J8OodPti4cg3LCLUt1AoD/l4=</dsig:DigestValue>
+        <dsig:DigestValue>02McvC9CfCOYRkdaw2HDF4woXyHfAsEZXo/oTP8cOGs=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

@@ -97,7 +97,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>S8SdmtIyEXlVrTp52s/kSDacn6IfdEx6Wq7GIDKhR+k=</dsig:DigestValue>
+        <dsig:DigestValue>v37e8rrkphi9CJ5vYJGVrOM8m/5tEVjikElg7mkSH2k=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -125,13 +125,13 @@
       </hash>
     </dependentAssembly>
   </dependency>
-  <file name="MqttTest.exe.config" size="1250">
+  <file name="MqttTest.exe.config" size="1240">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>z2KDlRAn5agprcJzdQ9QV6DtRUUDbizqDYHZOJ3MIQc=</dsig:DigestValue>
+      <dsig:DigestValue>trDcwaA5LqUIbSseFlbWdlmnziutfPWHYK26FYNH6zI=</dsig:DigestValue>
     </hash>
   </file>
   <file name="Resources\Sounds\air_fail.wav" size="1287094">

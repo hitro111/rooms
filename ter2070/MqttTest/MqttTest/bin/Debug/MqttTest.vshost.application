@@ -4,7 +4,7 @@
   <description asmv2:publisher="MqttTest" asmv2:product="MqttTest" xmlns="urn:schemas-microsoft-com:asm.v1" />
   <deployment install="true" mapFileExtensions="true" />
   <compatibleFrameworks xmlns="urn:schemas-microsoft-com:clickonce.v2">
-    <framework targetVersion="4.5" profile="Full" supportedRuntime="4.0.30319" />
+    <framework targetVersion="4.6.1" profile="Full" supportedRuntime="4.0.30319" />
   </compatibleFrameworks>
   <dependency>
     <dependentAssembly dependencyType="install" codebase="MqttTest.exe.manifest" size="20104">
@@ -14,7 +14,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>HKmduA3a1Bp9ZlVzuSgWnx00tFdOSwfRGlRiTUkIiu8=</dsig:DigestValue>
+        <dsig:DigestValue>nrbiZD4DWUlWApJTP2qL4dE3dwhEGkWTmToRwz8psY4=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

@@ -1,0 +1,76 @@
+
+---------------- INFO 08.12.2018 19:30:49 ---------------- 
+APP STARTING...
+---------------- END INFO ---------------- 
+
+---------------- INFO 08.12.2018 19:31:07 ---------------- 
+APP STARTING...
+---------------- END INFO ---------------- 
+
+---------------- INFO 08.12.2018 19:31:48 ---------------- 
+APP STARTING...
+---------------- END INFO ---------------- 
+
+---------------- INFO 08.12.2018 19:31:57 ---------------- 
+APP STARTING...
+---------------- END INFO ---------------- 
+
+---------------- INFO 08.12.2018 19:34:06 ---------------- 
+APP STARTING...
+---------------- END INFO ---------------- 
+---------------- ERROR 08.12.2018 19:34:06 ----------------
+EXECPTION:   Not connected
+   в Charlotte.MQTTConnection.Publish(String topic, String message)
+   в Charlotte.Mqtt.Publish(String topic, String message)
+   в Charlotte.MqttModule.Publish(String topic, String message)
+   в MqttTest.Mqtt.Commands.All_Init() в D:\Work\spaceroom\repo\rooms\ter2070\MqttTest\MqttTest\Mqtt\Commands.cs:строка 81
+   в MqttTest.QuestTest.Init() в D:\Work\spaceroom\repo\rooms\ter2070\MqttTest\MqttTest\Form1.cs:строка 31
+   в MqttTest.QuestTest..ctor() в D:\Work\spaceroom\repo\rooms\ter2070\MqttTest\MqttTest\Form1.cs:строка 18
+   в MqttTest.Program.Main() в D:\Work\spaceroom\repo\rooms\ter2070\MqttTest\MqttTest\Program.cs:строка 24
+
+---------------- END ERROR ----------------
+
+
+---------------- INFO 08.12.2018 19:34:33 ---------------- 
+APP STARTING...
+---------------- END INFO ---------------- 
+
+---------------- INFO 08.12.2018 19:35:02 ---------------- 
+APP STARTING...
+---------------- END INFO ---------------- 
+
+---------------- INFO 08.12.2018 19:36:52 ---------------- 
+APP STARTING...
+---------------- END INFO ---------------- 
+
+---------------- INFO 08.12.2018 19:37:01 ---------------- 
+FORM CLOSING
+---------------- END INFO ---------------- 
+
+---------------- INFO 08.12.2018 19:37:12 ---------------- 
+APP STARTING...
+---------------- END INFO ---------------- 
+
+---------------- INFO 08.12.2018 19:37:17 ---------------- 
+FORM CLOSING
+---------------- END INFO ---------------- 
+
+---------------- INFO 08.12.2018 19:37:20 ---------------- 
+APP STARTING...
+---------------- END INFO ---------------- 
+
+---------------- INFO 08.12.2018 20:13:00 ---------------- 
+FORM CLOSING
+---------------- END INFO ---------------- 
+
+---------------- INFO 08.12.2018 20:23:43 ---------------- 
+APP STARTING...
+---------------- END INFO ---------------- 
+
+---------------- INFO 08.12.2018 20:24:11 ---------------- 
+APP STARTING...
+---------------- END INFO ---------------- 
+
+---------------- INFO 10.12.2018 17:22:56 ---------------- 
+FORM CLOSING
+---------------- END INFO ---------------- 

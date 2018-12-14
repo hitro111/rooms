@@ -30,6 +30,7 @@
         {
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.genPwrLbl = new System.Windows.Forms.Label();
             this.door1PwrLbl = new System.Windows.Forms.Label();
             this.block2PwrLbl = new System.Windows.Forms.Label();
             this.block1PwrLbl = new System.Windows.Forms.Label();
@@ -59,7 +60,7 @@
             this.consoleTb = new System.Windows.Forms.TextBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.button9 = new System.Windows.Forms.Button();
-            this.genPwrLbl = new System.Windows.Forms.Label();
+            this.smokeBtn = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage4.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -79,6 +80,7 @@
             // 
             // tabPage4
             // 
+            this.tabPage4.Controls.Add(this.smokeBtn);
             this.tabPage4.Controls.Add(this.genPwrLbl);
             this.tabPage4.Controls.Add(this.door1PwrLbl);
             this.tabPage4.Controls.Add(this.block2PwrLbl);
@@ -112,6 +114,15 @@
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "tabPage4";
             this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // genPwrLbl
+            // 
+            this.genPwrLbl.AutoSize = true;
+            this.genPwrLbl.Location = new System.Drawing.Point(25, 450);
+            this.genPwrLbl.Name = "genPwrLbl";
+            this.genPwrLbl.Size = new System.Drawing.Size(24, 17);
+            this.genPwrLbl.TabIndex = 32;
+            this.genPwrLbl.Text = "66";
             // 
             // door1PwrLbl
             // 
@@ -393,14 +404,15 @@
             this.button9.UseVisualStyleBackColor = true;
             this.button9.Click += new System.EventHandler(this.button9_Click);
             // 
-            // genPwrLbl
+            // smokeBtn
             // 
-            this.genPwrLbl.AutoSize = true;
-            this.genPwrLbl.Location = new System.Drawing.Point(25, 450);
-            this.genPwrLbl.Name = "genPwrLbl";
-            this.genPwrLbl.Size = new System.Drawing.Size(24, 17);
-            this.genPwrLbl.TabIndex = 32;
-            this.genPwrLbl.Text = "66";
+            this.smokeBtn.Location = new System.Drawing.Point(375, 284);
+            this.smokeBtn.Name = "smokeBtn";
+            this.smokeBtn.Size = new System.Drawing.Size(119, 23);
+            this.smokeBtn.TabIndex = 33;
+            this.smokeBtn.Text = "Smoke ON";
+            this.smokeBtn.UseVisualStyleBackColor = true;
+            this.smokeBtn.Click += new System.EventHandler(this.smokeBtn_Click);
             // 
             // QuestTest
             // 
@@ -454,6 +466,7 @@
         private System.Windows.Forms.Label block2PwrLbl;
         private System.Windows.Forms.Label block1PwrLbl;
         private System.Windows.Forms.Label genPwrLbl;
+        private System.Windows.Forms.Button smokeBtn;
     }
 }
 

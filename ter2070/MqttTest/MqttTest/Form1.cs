@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using MqttTest.Mqtt;
 
@@ -9,20 +10,27 @@ namespace MqttTest
     public partial class QuestTest : Form
     {
         private readonly Commands _commands = new Commands();
-        private readonly Events _events;
+        private Events _events;
 
         public QuestTest()
         {
             InitializeComponent();
 
+            Task.Run(() =>
+            {
+                Task.Delay(2000);
+                InitMqtt();
+                Init();
+            });
+        }
+
+        private void InitMqtt()
+        {
             _events = new Events(this);
 
             _commands.Run();
             _events.Run();
-
-            Init();
         }
-
 
         private void Init()
         {
@@ -216,6 +224,20 @@ namespace MqttTest
         public void Generator(int value)
         {
             genPwrLbl.Text = value.ToString();
+        }
+
+        private void smokeBtn_Click(object sender, EventArgs e)
+        {
+            if (smokeBtn.Text == "Smoke ON")
+            {
+                smokeBtn.Text = "Smoke OFF";
+                _commands.Smoke_On();
+            }
+            else
+            {
+                smokeBtn.Text = "Smoke ON";
+                _commands.Smoke_Off();
+            }
         }
     }
 }

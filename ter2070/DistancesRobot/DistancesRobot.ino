@@ -1,4 +1,3 @@
-#define TRACE
 #define NO_SERVER
 #define resetPin 7
 
@@ -22,22 +21,7 @@ byte ip[] = { 192, 168, 0, 59 }; // <- change to match your network
 
 Servo headServo;          // Севра отвечающая за поворот головы (30налево 50центр 70право)
 
-//[][0] - echo
-//[][1] - trig
-byte pins[AMOUNT][2] = {
-  {9, 8},
-  {7, 6},
-  {5, 4},
-  {3, 2}
-};
-
-byte leds[AMOUNT] = {14, 15, 16, 17};
 byte servoVals[AMOUNT] = {5, 30, 60, 90};
-unsigned int impulseTime = 0;
-unsigned int distance_sm = 0;
-
-#define MAX_TRIG_DST 150
-#define MIN_TRIG_DST 6
 
 #define ACTIVATE_TIME 3000
 #define DEACTIVATE_TIME 10000
@@ -62,18 +46,7 @@ void setup() {
   client.begin("192.168.0.91", net);
 #endif
 
-#ifdef TRACE
-  Serial.begin(9600);
-#endif
-
-  for (int i = 0; i < AMOUNT; ++i)
-  {
-    pinMode(pins[i][0], INPUT); //echo
-    pinMode(pins[i][1], OUTPUT); //trig
-    pinMode(leds[i], OUTPUT);
-    digitalWrite(leds[i], HIGH);
-    digitalWrite(pins[i][1], LOW);
-  }
+Serial.begin(9600);
 
   headServo.attach(HEAD_SRV_PIN);
   headServo.write(45); // прямо
@@ -90,45 +63,21 @@ void loop() {
   }
 #endif
 
-  for (int i = 0; i < AMOUNT; ++i)
+  byte sVal;
+  while (Serial.available())
   {
-    digitalWrite(pins[i][1], HIGH);
-    /* Подаем импульс на вход trig дальномера */
-    delayMicroseconds(10); // равный 10 микросекундам
-    digitalWrite(pins[i][1], LOW); // Отключаем
-    impulseTime = pulseIn(pins[i][0], HIGH); // Замеряем длину импульса
-    distance_sm = impulseTime / 58; // Пересчитываем в сантиметры
-#ifdef TRACE
-    //Serial.print(i);
-    //Serial.print(": ");
-    //Serial.println(distance_sm);
-#endif
-    if (distance_sm > MIN_TRIG_DST && distance_sm < MAX_TRIG_DST)
+    sVal = Serial.read() - '0';
+    
+    Serial.println(sVal);
+    if (sVal < 10)
     {
-      if (lastIn[i] <= lastOut[i])  //if was not in
-      {
-        lastIn[i] = millis();
-#ifdef TRACE
-        Serial.print("IN: ");
-        Serial.println(i);
-#endif
-      }
-      digitalWrite(leds[i], HIGH);
+      lastIn[sVal] = millis();
     }
     else
     {
-      if (lastOut[i] <= lastIn[i]) //if was not out
-      {
-        lastOut[i] = millis();
-#ifdef TRACE
-        Serial.print("OUT: ");
-        Serial.println(i);
-#endif
-      }
-      digitalWrite(leds[i], LOW);
+      lastOut[sVal - 10] = millis();
     }
   }
-
 
   bool allDeactivated = true;
   for (int i = 0; i < AMOUNT; ++i)
@@ -136,11 +85,6 @@ void loop() {
     if (lastIn[i] > lastOut[i] && millis() - lastIn[i] > ACTIVATE_TIME) //in later than out + time passed since in > ACTIVATE_TIME
     {
       isActivated = true;
-#ifdef TRACE
-      Serial.print(i);
-      Serial.print(": ");
-      Serial.println("activated loop");
-#endif
     }
 
     if (lastOut[i] <= lastIn[i] || (lastOut[i] > lastIn[i] && lastOut[i] - lastIn[i] < DEACTIVATE_TIME)) //any in > out or not much time passed after out
@@ -163,10 +107,7 @@ void loop() {
         minInd = i;
       }
     }
-
-#ifdef TRACE
-    Serial.println("writing servo");
-#endif
+    
     headServo.write(servoVals[minInd]);
   }
 }

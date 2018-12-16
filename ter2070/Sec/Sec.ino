@@ -40,13 +40,7 @@ PCF8574 in; // Светодиоды 1-8
 PCF8574 out; // Светодиоды 9-16
 Bounce btn = Bounce();
 
-enum LightState
-{
-  Low,
-  On
-};
-
-LightState lightState;
+bool bLightLow;
 
 void lightOn()
 {
@@ -90,7 +84,7 @@ void handleLight()
   else
   {
     digitalWrite(ALARM_PIN, LOW);
-    lightState == Low ? lightLow() : lightOn();
+    bLightLow ? lightLow() : lightOn();
   }
 }
 
@@ -132,17 +126,16 @@ void __init()
   gameState = Waiting;
 }
 
+/*
 void playBtn()
 {
 
   Serial.println("btn");
   //mp3_play(3);
-}
+}*/
 
 void playWin()
 {
-
-  Serial.println("win");
   mp3_set_volume (30);
   delay(10);
   mp3_play(4);
@@ -150,8 +143,6 @@ void playWin()
 
 void playLoose()
 {
-
-  Serial.println("loose");
   mp3_set_volume (30);
   delay(10);
   mp3_play(5);
@@ -159,7 +150,6 @@ void playLoose()
 
 void playLoopOutCircle()
 {
-  Serial.println("out");
   mp3_set_volume (30);
   delay(10);
 
@@ -172,7 +162,6 @@ void playLoopOutCircle()
 
 void playLoopInCircle()
 {
-  Serial.println("in");
   mp3_set_volume (22);
   delay(10);
 
@@ -189,16 +178,16 @@ void setup() {
 
   pinMode(LIGHT_PIN, OUTPUT);
   pinMode(ALARM_PIN, OUTPUT);
-  lightState = On;
+  bLightLow = false;
+  //lightOn();
   digitalWrite(ALARM_PIN, LOW);
 
-  Serial.begin(9600);
+  //Serial.begin(9600);
 #ifndef NO_SERVER
   Ethernet.begin(mac, ip);
   client.begin("192.168.0.91", net);
 #endif
   in.begin(0x25);
-
   out.begin(0x26);
 
   for (int i = 0; i < SIZE; ++i)
@@ -216,30 +205,20 @@ void setup() {
   mp3_set_volume (30);
 
   randomSeed(analogRead(A2));
-
-
-  Serial.println("Preinit");
   __init();
 
 #ifdef NO_SERVER
   __init();
   gameState = OutCircleInit;
 #endif
-  Serial.println("Init done");
 }
 
 void hard_Reboot()
 {
-
-  Serial.println("reboot");
   digitalWrite(resetPin, HIGH);
 }
 
 void messageReceived(String topic, String payload, char * bytes, unsigned int length) {
-
-  Serial.println(topic);
-  Serial.println(payload);
-
   client.publish("space/console/out", topic);
   client.publish("space/console/out", payload);
 
@@ -261,10 +240,6 @@ void messageReceived(String topic, String payload, char * bytes, unsigned int le
     }
     else if (topic == "ter2070/sec/in" && payload == "1")
     {
-
-      String msg = "Start received!";
-      client.publish("space/console/out", msg);
-
       __init();
       gameState = OutCircleInit;
     }
@@ -272,11 +247,11 @@ void messageReceived(String topic, String payload, char * bytes, unsigned int le
     {
       if (payload == "1")
       {
-        lightState = Low;
+        bLightLow = true;
       }
       else if (payload == "0")
       {
-        lightState = On;
+        bLightLow = false;
       }
     }
     else if (topic == "ter2070/tlazers/alert/server")
@@ -291,15 +266,11 @@ void messageReceived(String topic, String payload, char * bytes, unsigned int le
 void connect() {
   int n = 0;
   while (!client.connect(ACC)) {
-
-    Serial.println("Attempt");
     delay(1000);
     n++;
     if (n > 5)
       hard_Reboot();
   }
-
-  Serial.println("Connected");
 
   client.subscribe("ter2070/reset");
   client.subscribe("ter2070/ping/in");
@@ -405,7 +376,7 @@ void ProcessOutCircleInit()
 
   if (IsBtnClick())
   {
-    playBtn();
+   // playBtn();
     out.digitalWrite(targetLedOut, LED_OFF);
     gameState = OutCircleRunning;
   }
@@ -442,7 +413,7 @@ void ProcessOutCircleRunning()
 
   if (IsBtnClick())
   {
-    playBtn();
+    //playBtn();
     if (currentOut == targetLedOut)
       gameState = OutCircleOk;
     else
@@ -508,7 +479,7 @@ void ProcessInCircleInit()
 
   if (IsBtnClick())
   {
-    playBtn();
+    //playBtn();
     in.digitalWrite(targetLedIn, LED_OFF);
     gameState = InCircleRunning;
   }
@@ -545,7 +516,7 @@ void ProcessInCircleRunning()
 
   if (IsBtnClick())
   {
-    playBtn();
+    //playBtn();
     if (currentIn == targetLedIn)
       gameState = InCircleOk;
     else
@@ -593,9 +564,6 @@ void ProcessInCircleOk()
 
 void ProcessFinished()
 {
-  String msg = "Finish sent";
-  client.publish("space/console/out", msg);
-
   client.publish("ter2070/sec/out", "1");
 
 #ifdef NO_SERVER

@@ -254,7 +254,6 @@ void loop() {
       break;
     case Stopped:
       handleLight();
-      delay(100);
       break;
     case Activating:
 #ifdef TRACE

@@ -26,8 +26,8 @@ MQTTClient client;
   6 D0 A0
 */
 
-#define Lamp_1CH 6
-#define Lamp_2CH 5
+#define LIGHT_PIN 6
+#define ALARM_PIN 5
 
 #if defined(TRACE) || defined(DIAGNOSTICS)
 const int L_CT = 4;
@@ -76,8 +76,8 @@ void setup() {
   Serial.println("4 lazers only, serial enabled");
 #endif
 
-  pinMode(Lamp_1CH, OUTPUT);
-  pinMode(Lamp_2CH, OUTPUT);
+  pinMode(LIGHT_PIN, OUTPUT);
+  pinMode(ALARM_PIN, OUTPUT);
 
   lightOn();
 
@@ -93,14 +93,43 @@ void setup() {
 
 void lightOn()
 {
-  analogWrite(Lamp_1CH, 100);
-  analogWrite(Lamp_2CH, 100);
+  analogWrite(LIGHT_PIN, 100);
 }
 
 void lightOff()
 {
-  digitalWrite(Lamp_1CH, LOW);
-  digitalWrite(Lamp_2CH, LOW);
+  digitalWrite(LIGHT_PIN, LOW);
+}
+
+unsigned long long alarmTriggered = 0;
+bool alarmLightOn = false;
+unsigned long long alarmLightOnChanged = 0;
+#define TIME_ON 500
+#define TIME_OFF 200
+#define ALARM_DURATION 10000
+void handleLight()
+{
+  if (millis() < alarmTriggered + ALARM_DURATION)
+  {
+    lightOff();
+    if (alarmLightOn && millis() - alarmLightOnChanged > TIME_ON)
+    {
+      alarmLightOn = false;
+      alarmLightOnChanged = millis();
+    }
+    else if (!alarmLightOn && millis() - alarmLightOnChanged > TIME_OFF)
+    {
+      alarmLightOn = true;
+      alarmLightOnChanged = millis();
+    }
+
+    digitalWrite(ALARM_PIN, alarmLightOn);
+  }
+  else
+  {
+    digitalWrite(ALARM_PIN, LOW);
+    lightOn();
+  }
 }
 
 void switchLazers(bool on)
@@ -219,12 +248,12 @@ void loop() {
       Serial.println("Stopping");
 #endif
 
-      lightOn();
       switchLazers(false);
 
       state = Stopped;
       break;
     case Stopped:
+      handleLight();
       delay(100);
       break;
     case Activating:
@@ -235,7 +264,7 @@ void loop() {
       lightOff();
 
       switchLazers(true);
-
+      
       delay(50);
       state = Active;
       break;
@@ -264,6 +293,7 @@ void loop() {
 #endif
 
       switchLazers(false);
+      alarmTriggered = millis();
 
 #ifndef NO_SERVER
       client.publish("ter2070/tlazers/alert/server", "1");

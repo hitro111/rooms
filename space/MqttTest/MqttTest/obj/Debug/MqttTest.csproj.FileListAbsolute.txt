@@ -112,3 +112,6 @@ D:\Work\spaceroom\spaceroom\MqttTest\MqttTest\obj\Debug\MqttTest.Properties.Reso
 D:\Work\spaceroom\spaceroom\MqttTest\MqttTest\obj\Debug\MqttTest.csproj.GenerateResource.Cache
 D:\Work\spaceroom\spaceroom\MqttTest\MqttTest\obj\Debug\MqttTest.exe.manifest
 D:\Work\spaceroom\spaceroom\MqttTest\MqttTest\obj\Debug\MqttTest.application
+D:\Work\spaceroom\repo\rooms\space\MqttTest\MqttTest\bin\Debug\MqttTest.exe.config
+D:\Work\spaceroom\repo\rooms\space\MqttTest\MqttTest\obj\Debug\MqttTest.exe
+D:\Work\spaceroom\repo\rooms\space\MqttTest\MqttTest\obj\Debug\MqttTest.pdb

@@ -13,8 +13,11 @@ byte leds[AMOUNT] = {14, 15, 16, 17};
 unsigned int impulseTime = 0;
 unsigned int distance_sm = 0;
 
-#define MAX_TRIG_DST 30
+#define MAX_TRIG_DST 150
 #define MIN_TRIG_DST 6
+
+char cmdIn[] = {'a','b','c','d'};
+char cmdOut[] = {'A', 'B', 'C', 'D'};
 
 void __init()
 {
@@ -28,7 +31,7 @@ void setup() {
   {
     pinMode(pins[i][0], INPUT); //echo
     pinMode(pins[i][1], OUTPUT); //trig
-    pinMode(leds[i], OUTPUT);
+    pinMode(leds[i], OUTPUT); 
     digitalWrite(leds[i], HIGH);
     digitalWrite(pins[i][1], LOW);
   }
@@ -53,7 +56,7 @@ void loop() {
       if (lastIn[i] <= lastOut[i])  //if was not in
       {
         lastIn[i] = millis();
-        Serial.print(byte(i));
+        Serial.print(cmdIn[i]);
       }
       digitalWrite(leds[i], HIGH);
     }
@@ -62,7 +65,7 @@ void loop() {
       if (lastOut[i] <= lastIn[i]) //if was not out
       {
         lastOut[i] = millis();
-        Serial.print(byte(i + 10));
+        Serial.print(cmdOut[i]);
       }
       digitalWrite(leds[i], LOW);
     }

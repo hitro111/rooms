@@ -10,6 +10,7 @@
 #define LED_ON LOW
 #define LED_OFF HIGH
 #define LIGHT_PIN 5
+#define ALARM_PIN 6
 
 #define ProcessOutCircleInit_delay 100
 #define ProcessOutCircleRunning_delay 50
@@ -39,6 +40,14 @@ PCF8574 in; // Светодиоды 1-8
 PCF8574 out; // Светодиоды 9-16
 Bounce btn = Bounce();
 
+enum LightState
+{
+  Low,
+  On
+};
+
+LightState lightState;
+
 void lightOn()
 {
   analogWrite(LIGHT_PIN, 255);
@@ -52,6 +61,37 @@ void lightLow()
 void lightOff()
 {
   digitalWrite(LIGHT_PIN, LOW);
+}
+
+unsigned long long alarmTriggered = 0;
+bool alarmLightOn = false;
+unsigned long long alarmLightOnChanged = 0;
+#define TIME_ON 500
+#define TIME_OFF 200
+#define ALARM_DURATION 10000
+void handleLight()
+{
+  if (millis() < alarmTriggered + ALARM_DURATION)
+  {
+    lightOff();
+    if (alarmLightOn && millis() - alarmLightOnChanged > TIME_ON)
+    {
+      alarmLightOn = false;
+      alarmLightOnChanged = millis();
+    }
+    else if (!alarmLightOn && millis() - alarmLightOnChanged > TIME_OFF)
+    {
+      alarmLightOn = true;
+      alarmLightOnChanged = millis();
+    }
+
+    digitalWrite(ALARM_PIN, alarmLightOn);
+  }
+  else
+  {
+    digitalWrite(ALARM_PIN, LOW);
+    lightState == Low ? lightLow() : lightOn();
+  }
 }
 
 enum State
@@ -148,7 +188,9 @@ void setup() {
   digitalWrite(resetPin, LOW);
 
   pinMode(LIGHT_PIN, OUTPUT);
-  lightOn();
+  pinMode(ALARM_PIN, OUTPUT);
+  lightState = On;
+  digitalWrite(ALARM_PIN, LOW);
 
   Serial.begin(9600);
 #ifndef NO_SERVER
@@ -230,16 +272,16 @@ void messageReceived(String topic, String payload, char * bytes, unsigned int le
     {
       if (payload == "1")
       {
-        lightLow();
+        lightState = Low;
       }
       else if (payload == "0")
       {
-        lightOn();
+        lightState = On;
       }
     }
     else if (topic == "ter2070/tlazers/alert/server")
     {
-      lightOn();
+      alarmTriggered = millis();
     }
   }
 }
@@ -270,7 +312,7 @@ void connect() {
 
 void loop()
 {
-
+  handleLight();
 #ifndef NO_SERVER
   client.loop();
 

@@ -1,5 +1,5 @@
 #define TRACE
-//#define NO_SERVER
+#define NO_SERVER
 #define resetPin 7
 
 #include <Ethernet.h>
@@ -27,7 +27,6 @@ MQTTClient client;
 #define switch_6   14 //3
 #define led_charging 2
 
-#define SOUND_PIN 4
 #define BATTERY_LIGHT_PIN 2
 
 NFC_Module nfc;
@@ -60,6 +59,7 @@ int fullMp3 = 13; // "0013.mp3"
 int expected_vals[6] = {LOW, HIGH, HIGH, HIGH, LOW, HIGH};
 int needed_sounds[6] = {1, 2, 3, 4, 5, 6}; //"0001.mp3", "0002.mp3"...
 int bad_sounds[6] = {7, 8, 9, 10, 11, 12}; //"0007.mp3"...
+int pwrTransferSound = 14;
 int pins[6] = {3, 4, 17, 16, 15, 14};
 int vals_prev[6];
 int vals[6];
@@ -141,9 +141,7 @@ void setup() {
 
   nfc.SAMConfiguration();
 
-  pinMode(SOUND_PIN, OUTPUT);
   pinMode(BATTERY_LIGHT_PIN, OUTPUT);
-  digitalWrite (SOUND_PIN, HIGH); //inverted
   digitalWrite (BATTERY_LIGHT_PIN, LOW);
 
   pinMode(switch_1, INPUT);
@@ -280,9 +278,26 @@ void light(bool on)
   }
 }
 
+
+bool state = false;
 void sound(bool on)
 {
-  on ? digitalWrite(SOUND_PIN, LOW) : digitalWrite(SOUND_PIN, HIGH); //inverted
+  if (on && !state)
+  {
+    state = true;
+    mp3_play (pwrTransferSound);
+    delay (50);
+    mp3_single_loop (true);
+    delay (50);
+    mp3_single_loop (true);
+  }
+  else if (!on && state)
+  {
+    mp3_stop();
+    delay(50);
+    mp3_stop();
+    state = false;
+  }
 }
 
 unsigned long lastMillis = 0;
@@ -374,13 +389,13 @@ void loop() {
         }
 
         powerLeft = toCard ? power : values[found];
-        light(false);
-        if (powerLeft)
-          sound(true);
-        delay(5);
-        sound(false);
+
         if (powerLeft)
           light(true);
+        delay(5);
+        light(false);
+
+        powerLeft ? sound(true) : sound(false);
       }
     }
   }
@@ -388,7 +403,7 @@ void loop() {
   {
     found = -1;
     light(false);
-    digitalWrite(SOUND_PIN, HIGH); //inverted
+    sound(false);
     startBattery = 0;
     clearBattery();
   }
@@ -409,7 +424,7 @@ void messageReceived(String topic, String payload, char * bytes, unsigned int le
       char dev_id = payload[0];
       if (dev_id == DEV_ID)
         return;
-        
+
       payload.remove(0, 1);
       values[0] = payload.toInt();
     }
@@ -420,7 +435,7 @@ void messageReceived(String topic, String payload, char * bytes, unsigned int le
       char dev_id = payload[0];
       if (dev_id == DEV_ID)
         return;
-        
+
       payload.remove(0, 1);
       values[1] = payload.toInt();
     }
@@ -431,11 +446,11 @@ void messageReceived(String topic, String payload, char * bytes, unsigned int le
       char dev_id = payload[0];
       if (dev_id == DEV_ID)
         return;
-        
+
       payload.remove(0, 1);
       power = payload.toInt();
     }
-    
+
     if (payload == "r")
     {
       hard_Reboot();

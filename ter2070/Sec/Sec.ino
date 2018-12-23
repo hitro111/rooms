@@ -9,8 +9,8 @@
 #define NOT_SET 250
 #define LED_ON LOW
 #define LED_OFF HIGH
-#define LIGHT_PIN 5
-#define ALARM_PIN 6
+#define LED_GB 5 //white = 5+6
+#define LED_R 6 //6
 
 #define ProcessOutCircleInit_delay 100
 #define ProcessOutCircleRunning_delay 50
@@ -44,17 +44,20 @@ bool bLightLow;
 
 void lightOn()
 {
-  analogWrite(LIGHT_PIN, 255);
+  analogWrite(LED_GB, 255);
+  analogWrite(LED_R, 255);
 }
 
 void lightLow()
 {
-  analogWrite(LIGHT_PIN, 10);
+  analogWrite(LED_GB, 10);
+  analogWrite(LED_R, 10);
 }
 
 void lightOff()
 {
-  digitalWrite(LIGHT_PIN, LOW);
+  analogWrite(LED_GB, LOW);
+  analogWrite(LED_R, LOW);
 }
 
 unsigned long long alarmTriggered = 0;
@@ -65,7 +68,7 @@ unsigned long long alarmLightOnChanged = 0;
 #define ALARM_DURATION 10000
 void handleLight()
 {
-  if (millis() < alarmTriggered + ALARM_DURATION)
+  if (millis() > ALARM_DURATION * 2 /*not just started*/ && millis() < alarmTriggered + ALARM_DURATION)
   {
     lightOff();
     if (alarmLightOn && millis() - alarmLightOnChanged > TIME_ON)
@@ -79,11 +82,10 @@ void handleLight()
       alarmLightOnChanged = millis();
     }
 
-    digitalWrite(ALARM_PIN, alarmLightOn);
+    digitalWrite(LED_R, alarmLightOn);
   }
   else
   {
-    digitalWrite(ALARM_PIN, LOW);
     bLightLow ? lightLow() : lightOn();
   }
 }
@@ -123,6 +125,7 @@ void __init()
   Reset();
   SetAllIn(false);
   SetAllOut(false);
+  mp3_stop();
   gameState = Waiting;
 }
 
@@ -176,11 +179,10 @@ void setup() {
   pinMode(resetPin, OUTPUT);
   digitalWrite(resetPin, LOW);
 
-  pinMode(LIGHT_PIN, OUTPUT);
-  pinMode(ALARM_PIN, OUTPUT);
+  pinMode(LED_GB, OUTPUT);
+  pinMode(LED_R, OUTPUT);
   bLightLow = false;
   //lightOn();
-  digitalWrite(ALARM_PIN, LOW);
 
   //Serial.begin(9600);
 #ifndef NO_SERVER
@@ -203,6 +205,7 @@ void setup() {
   mp3_set_serial (mp3Serial);  //set softwareSerial for DFPlayer-mini mp3 module
   delay(100);
   mp3_set_volume (30);
+  mp3_stop();
 
   randomSeed(analogRead(A2));
   __init();

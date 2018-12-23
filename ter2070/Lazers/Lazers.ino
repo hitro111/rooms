@@ -26,8 +26,8 @@ MQTTClient client;
   6 D0 A0
 */
 
-#define LIGHT_PIN 6
-#define ALARM_PIN 5
+#define LED_GB 6
+#define LED_R 5
 
 #if defined(TRACE) || defined(DIAGNOSTICS)
 const int L_CT = 4;
@@ -76,8 +76,8 @@ void setup() {
   Serial.println("4 lazers only, serial enabled");
 #endif
 
-  pinMode(LIGHT_PIN, OUTPUT);
-  pinMode(ALARM_PIN, OUTPUT);
+  pinMode(LED_GB, OUTPUT);
+  pinMode(LED_R, OUTPUT);
 
   lightOn();
 
@@ -93,12 +93,14 @@ void setup() {
 
 void lightOn()
 {
-  analogWrite(LIGHT_PIN, 100);
+  analogWrite(LED_GB, 100);
+  analogWrite(LED_R, 100);
 }
 
 void lightOff()
-{
-  digitalWrite(LIGHT_PIN, LOW);
+{ 
+  digitalWrite(LED_GB, LOW);
+  digitalWrite(LED_R, LOW);
 }
 
 unsigned long long alarmTriggered = 0;
@@ -123,11 +125,10 @@ void handleLight()
       alarmLightOnChanged = millis();
     }
 
-    digitalWrite(ALARM_PIN, alarmLightOn);
+    digitalWrite(LED_R, alarmLightOn);
   }
   else
   {
-    digitalWrite(ALARM_PIN, LOW);
     lightOn();
   }
 }
@@ -263,7 +264,7 @@ void loop() {
       lightOff();
 
       switchLazers(true);
-      
+
       delay(50);
       state = Active;
       break;
@@ -292,12 +293,12 @@ void loop() {
 #endif
 
       switchLazers(false);
-      alarmTriggered = millis();
 
 #ifndef NO_SERVER
       client.publish("ter2070/tlazers/alert/server", "1");
 #endif
 
+      alarmTriggered = millis();
       state = Stopping;
       break;
   }

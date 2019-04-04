@@ -12,3 +12,6 @@ Generator		61		11		tgen			2
 Server											0
 Smoke			60		10		tsmoke
 Sounds			62		12		tsound			3
+TV				63		13		ttv				4
+CPU				64		14		tcpu			5
+Stand			65		15		tstand			6

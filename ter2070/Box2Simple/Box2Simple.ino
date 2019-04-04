@@ -239,6 +239,12 @@ void setup() {
   pinMode(resetPin, OUTPUT);
   digitalWrite(resetPin, LOW);
 
+  pinMode(LOCK, OUTPUT);
+  digitalWrite(LOCK, HIGH);
+  
+  pinMode(BUZ_PIN, OUTPUT);
+  digitalWrite(BUZ_PIN, LOW);
+
   lcd.init();                       // Инициализация lcd
   lcd.backlight();                  // Включаем подсветку
   lcd.createChar(0, letter_t);
@@ -251,11 +257,6 @@ void setup() {
   lcd.createChar(7, right);
   delay (100);
   lcd.clear();
-
-  pinMode(LOCK, OUTPUT);
-  pinMode(BUZ_PIN, OUTPUT);
-
-  digitalWrite(BUZ_PIN, LOW);
 
   customKeypad.addEventListener(keypadEvent);
   customKeypad.setHoldTime(5000);

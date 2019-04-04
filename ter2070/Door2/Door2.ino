@@ -22,9 +22,13 @@
 #include <LiquidCrystal_I2C.h>
 
 #define ACC "tdoor2"
-#define DOOR_LOCK 5
+#define DOOR_LOCK 3
 #define RESET_PIN 7
-const int analogPin = 1;
+#define KEY_PIN A1
+
+#define SMOKE_PIN A0
+#define ON LOW
+#define OFF HIGH
 
 LiquidCrystal_I2C lcd(0x27, 20, 4);
 byte letter_t[8] = // т
@@ -53,6 +57,10 @@ byte ip[] = { 192, 168, 0, 56 }; // <- change to match your network
 
 EthernetClient net;
 MQTTClient client;
+
+bool smokeOn = false;
+unsigned long long smokeOnTime = 0;
+#define SMOKE_TIME 20000
 
 enum State
 {
@@ -102,13 +110,31 @@ void setup() {
   lcd.setCursor(0, 0);
   pinMode(DOOR_LOCK, OUTPUT);
   pinMode(RESET_PIN, OUTPUT);
-  digitalWrite (DOOR_LOCK, HIGH);
-  digitalWrite (RESET_PIN, LOW);
+  pinMode(SMOKE_PIN, OUTPUT);
+
+  digitalWrite(DOOR_LOCK, HIGH);
+  digitalWrite(RESET_PIN, LOW);
+  digitalWrite(SMOKE_PIN, OFF);
 
   __init();
 }
 
 int val;
+
+void handleSmoke()
+{
+  if (smokeOn && smokeOnTime == 0) //need to turn on smoke
+  {
+    digitalWrite(SMOKE_PIN, ON);
+    smokeOnTime = millis();
+  }
+
+  if (smokeOn && millis() - smokeOnTime > SMOKE_TIME)
+  {
+    digitalWrite(SMOKE_PIN, OFF);
+    smokeOn = smokeOnTime = 0;
+  }
+}
 
 void loop() {
 #ifndef NO_SERVER
@@ -119,10 +145,12 @@ void loop() {
   }
 #endif
 
+  handleSmoke();
+
   switch (state)
   {
     case Waiting:
-      val = analogRead(analogPin);
+      val = analogRead(KEY_PIN);
 
       if (val < 500)
       {
@@ -198,6 +226,18 @@ void messageReceived(String topic, String payload, char * bytes, unsigned int le
         state = Opening;
       }
     }
+
+    if (topic == "ter2070/c/smoke")
+    {
+      if (payload == "1")
+      {
+        smokeOn = true;
+      }
+      else if (payload == "0")
+      {
+        digitalWrite(SMOKE_PIN, OFF);
+      }
+    }
   }
 }
 
@@ -217,6 +257,7 @@ void connect() {
   client.subscribe("ter2070/ping/in");
   client.subscribe("ter2070/tdoor2/reset");
   client.subscribe("ter2070/tdoor2/device");
+  client.subscribe("ter2070/c/smoke");
   // client.unsubscribe("/example");
 }
 

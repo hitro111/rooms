@@ -26,7 +26,7 @@ MQTTClient client;
   6 D0 A0
 */
 
-#define LED_GB 6
+#define LED_W 6
 #define LED_R 5
 
 #if defined(TRACE) || defined(DIAGNOSTICS)
@@ -52,7 +52,8 @@ enum State
   Active,
   Alert,
 
-  Init
+  Init,
+  Manual
 };
 
 State state;
@@ -76,7 +77,7 @@ void setup() {
   Serial.println("4 lazers only, serial enabled");
 #endif
 
-  pinMode(LED_GB, OUTPUT);
+  pinMode(LED_W, OUTPUT);
   pinMode(LED_R, OUTPUT);
 
   lightOn();
@@ -93,13 +94,13 @@ void setup() {
 
 void lightOn()
 {
-  analogWrite(LED_GB, 100);
-  analogWrite(LED_R, 100);
+  analogWrite(LED_W, 100);
+  analogWrite(LED_R, 0);
 }
 
 void lightOff()
-{ 
-  digitalWrite(LED_GB, LOW);
+{
+  digitalWrite(LED_W, LOW);
   digitalWrite(LED_R, LOW);
 }
 
@@ -207,6 +208,9 @@ void loop() {
 
   switch (state)
   {
+    case Manual:
+      switchLazers(true);
+      return;
     case Init:
       for (int i = 0; i < L_CT; ++i)
       {
@@ -336,6 +340,21 @@ void messageReceived(String topic, String payload, char * bytes, unsigned int le
       {
 #ifndef NO_SERVER
         client.publish("ter2070/logs/server", "lazers stopping");
+#endif
+        state = Stopping;
+      }
+
+      if (payload == "2")
+      {
+#ifndef NO_SERVER
+        client.publish("ter2070/logs/server", "lazers manual on (tests)");
+#endif
+        state = Manual;
+      }
+      else if (payload == "3")
+      {
+#ifndef NO_SERVER
+        client.publish("ter2070/logs/server", "lazers manual off (tests)");
 #endif
         state = Stopping;
       }

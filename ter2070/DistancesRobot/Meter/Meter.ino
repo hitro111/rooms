@@ -1,3 +1,4 @@
+//#define DIAGNOSTICS
 #define AMOUNT 4
 
 //[][0] - echo
@@ -10,13 +11,14 @@ byte pins[AMOUNT][2] = {
 };
 
 byte leds[AMOUNT] = {14, 15, 16, 17};
-unsigned int impulseTime = 0;
+unsigned long impulseTime = 0;
 unsigned int distance_sm = 0;
 
-#define MAX_TRIG_DST 150
-#define MIN_TRIG_DST 6
+#define MIN_TRIG_DST 10
 
-char cmdIn[] = {'a','b','c','d'};
+int distances[] = {100, 100, 150, 140};
+
+char cmdIn[] = {'a', 'b', 'c', 'd'};
 char cmdOut[] = {'A', 'B', 'C', 'D'};
 
 void __init()
@@ -26,13 +28,13 @@ void __init()
 void setup() {
 
   Serial.begin(9600);
-  
+
   for (int i = 0; i < AMOUNT; ++i)
   {
     pinMode(pins[i][0], INPUT); //echo
     pinMode(pins[i][1], OUTPUT); //trig
-    pinMode(leds[i], OUTPUT); 
-    digitalWrite(leds[i], HIGH);
+    pinMode(leds[i], OUTPUT);
+    digitalWrite(leds[i], LOW);
     digitalWrite(pins[i][1], LOW);
   }
 
@@ -48,10 +50,17 @@ void loop() {
     /* Подаем импульс на вход trig дальномера */
     delayMicroseconds(10); // равный 10 микросекундам
     digitalWrite(pins[i][1], LOW); // Отключаем
-    impulseTime = pulseIn(pins[i][0], HIGH); // Замеряем длину импульса
+    impulseTime = pulseIn(pins[i][0], HIGH, 200000UL); // Замеряем длину импульса
     distance_sm = impulseTime / 58; // Пересчитываем в сантиметры
+    delay(20);
 
-    if (distance_sm > MIN_TRIG_DST && distance_sm < MAX_TRIG_DST)
+#ifdef DIAGNOSTICS
+    Serial.print(distance_sm);
+    Serial.print('\t');
+#endif
+
+#ifndef DIAGNOSTICS
+    if (distance_sm > MIN_TRIG_DST && distance_sm < distances[i])
     {
       if (lastIn[i] <= lastOut[i])  //if was not in
       {
@@ -60,7 +69,7 @@ void loop() {
       }
       digitalWrite(leds[i], HIGH);
     }
-    else
+    else if (distance_sm > MIN_TRIG_DST || distance_sm == 0)
     {
       if (lastOut[i] <= lastIn[i]) //if was not out
       {
@@ -69,7 +78,9 @@ void loop() {
       }
       digitalWrite(leds[i], LOW);
     }
-
-    delay(20);
+#endif
   }
+#ifdef DIAGNOSTICS
+  Serial.println();
+#endif
 }

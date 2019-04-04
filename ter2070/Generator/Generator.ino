@@ -12,17 +12,13 @@
 #include <nfc.h>
 #include <Wire.h>
 #include "LedControl.h"
-#include <Bounce2.h>
 
 #define DEV_ID '2'
-LedControl lc = LedControl(9, 8, 4, 1);
-#define LIGHT_PIN 5
-#define SOUND_PIN 2
-#define BATTERY_LIGHT_PIN 6
-#define HALL_PIN A1 //HIGH -> LOW
-#define HALL_STEP 2
-
-Bounce debouncer = Bounce();
+LedControl lc = LedControl(9, 8, 6, 1);
+#define BATTERY_LIGHT_PIN 3 //light block
+#define SOUND_PIN 4
+#define NEON_LIGHT_PIN 5 //neon light
+#define HALL_INTERRUPT 0
 
 NFC_Module nfc;
 u8 buf[32], sta;
@@ -36,9 +32,12 @@ PCF8574 pcf2;
 #define BLOCK1_VAL 180
 #define BLOCK2_VAL 112
 #define GEN_VAL 66
+#define POWER_LIMIT 999
+#define CARD_LIMIT 999
 
 int values[BLOCKS] = {BLOCK1_VAL, BLOCK2_VAL};
-int power = GEN_VAL;
+volatile int power = GEN_VAL;
+volatile int powerFract = 0;
 
 byte bufs[BLOCKS][4] = {
   {134, 1, 219, 31},
@@ -148,7 +147,7 @@ void setup() {
 #endif
     retries--;
     delay(500);
-    
+
     if (retries == 0)
     {
 #ifdef TRACE
@@ -165,17 +164,14 @@ void setup() {
   pcf2.begin(0x26);
 #endif
 
-  pinMode(LIGHT_PIN, OUTPUT);
-  pinMode(SOUND_PIN, OUTPUT);
   pinMode(BATTERY_LIGHT_PIN, OUTPUT);
-  pinMode(HALL_PIN, INPUT);
-  debouncer.attach(HALL_PIN);
-  debouncer.interval(5); // interval in ms
+  pinMode(SOUND_PIN, OUTPUT);
+  pinMode(NEON_LIGHT_PIN, OUTPUT);
+  attachInterrupt(HALL_INTERRUPT, generate, FALLING);
 
-
-  digitalWrite (LIGHT_PIN, LOW);
-  digitalWrite (SOUND_PIN, HIGH); //inverted
   digitalWrite (BATTERY_LIGHT_PIN, LOW);
+  digitalWrite (SOUND_PIN, LOW);
+  digitalWrite (NEON_LIGHT_PIN, LOW);
 
 #ifdef PCF
   for (int i = 0; i < 8; ++i)
@@ -191,16 +187,59 @@ void setup() {
 #endif
 }
 
+bool incPowerFract()
+{
+  powerFract++;
+  if (powerFract > 9)
+  {
+    powerFract = 0;
+    return true;
+  }
+
+  return false;
+}
+
+volatile int hallTicks = 0;
+#define TICKS_NEEDED 2
+void generate()
+{
+  if (hallTicks < TICKS_NEEDED)
+  {
+    hallTicks++;
+  }
+  else
+  {
+    hallTicks = 0;
+    if (incPowerFract())
+    {
+      setPower(power + 1);
+    }
+  }
+}
+
+bool setPower(int val)
+{
+  if (val <= POWER_LIMIT)
+  {
+    power = val;
+    return true;
+  }
+
+  return false;
+}
+
 bool isBatteryDirty = false;
 bool isDisplayDirty = false;
 
 int prevVal = -1;
-void setPower()
+int prevFractVal = -1;
+void setPowerDisplay()
 {
   int p = power;
-  if (prevVal != power)
+  if (prevVal != power || prevFractVal != powerFract)
   {
     prevVal = p;
+    prevFractVal = powerFract;
     updatePower();
     isDisplayDirty = true;
     int n1 = p % 10;
@@ -208,12 +247,10 @@ void setPower()
     int n10 = p % 10;
     p /= 10;
     int n100 = p % 10;
-    p /= 10;
-    int n1000 = p % 10;
-    lc.setDigit(0, 0, n1000, false);
-    lc.setDigit(0, 1, n100, false);
-    lc.setDigit(0, 2, n10, false);
-    lc.setDigit(0, 3, n1, false);
+    lc.setDigit(0, 0, n100, false);
+    lc.setDigit(0, 1, n10, false);
+    lc.setDigit(0, 2, n1, true);
+    lc.setDigit(0, 3, powerFract, false);
   }
 }
 
@@ -265,37 +302,51 @@ bool transferPower(int card, bool toCard, int amount)
   if (toCard)
   {
     amount = power - amount >= 0 ? amount : power;
-    power -= amount;
-    values[card] += amount;
+
+    if (values[card] + amount < CARD_LIMIT)
+    {
+      values[card] += amount;
+      power -= amount;
+    }
+
     return power != 0;
   }
   else
   {
     amount = values[card] - amount >= 0 ? amount : values[card];
-    power += amount;
 
-    values[card] -= amount;
+    if (setPower(power + amount))
+    {
+      values[card] -= amount;
+    }
+
     return values[card] != 0;
   }
 }
 
+byte neonCt = 0;
+#define NEON_USE 3
 void light(bool on)
 {
+  neonCt++;
+  bool useNeon = (neonCt % NEON_USE) == 0;
   if (on)
   {
-    digitalWrite(LIGHT_PIN, HIGH);
     digitalWrite(BATTERY_LIGHT_PIN, HIGH);
+    if (useNeon)
+      digitalWrite(NEON_LIGHT_PIN, HIGH);
   }
   else
   {
-    digitalWrite(LIGHT_PIN, LOW);
     digitalWrite(BATTERY_LIGHT_PIN, LOW);
+    if (useNeon)
+      digitalWrite(NEON_LIGHT_PIN, LOW);
   }
 }
 
 void sound(bool on)
 {
-  on ? digitalWrite(SOUND_PIN, LOW) : digitalWrite(SOUND_PIN, HIGH); //inverted
+  on ? digitalWrite(SOUND_PIN, HIGH) : digitalWrite(SOUND_PIN, LOW); //inverted
 }
 
 unsigned long lastMillis = 0;
@@ -304,7 +355,7 @@ unsigned long long lastUpdate = 0;
 bool powerLeft;
 int found = -1;
 bool toCard = false;
-bool hallPrevVal = HIGH;
+int hallPrevVal = HIGH;
 void loop() {
 #ifndef NO_SERVER
   client.loop();
@@ -317,25 +368,15 @@ void loop() {
   }
 #endif
 
+#ifndef NO_SERVER
   if (!tumblersDone)
   {
     clearDisplay();
     return;
   }
+#endif
 
-  
-  //handling hall sensor
-  debouncer.update();
-  int hallVal = debouncer.read();
-  if (hallVal == LOW && hallVal != hallPrevVal)
-  {
-    power += HALL_STEP;
-  }
-  hallPrevVal = hallVal;
-  //..
-  
-  
-  setPower();
+  setPowerDisplay();
   sta = nfc.InListPassiveTarget(buf);
   if (sta && buf[0] == 4)
   {
@@ -368,7 +409,7 @@ void loop() {
 
     if (found >= 0)
     {
-      setPower();
+      setPowerDisplay();
       setBattery(found);
 
       if (startBattery == 0)
@@ -384,7 +425,7 @@ void loop() {
 
           transferPower(found, toCard, 1);
 
-          setPower();
+          setPowerDisplay();
           setBattery(found);
         }
 
@@ -403,7 +444,7 @@ void loop() {
   {
     found = -1;
     light(false);
-    digitalWrite(SOUND_PIN, HIGH); //inverted
+    digitalWrite(SOUND_PIN, LOW);
     startBattery = 0;
     clearBattery();
   }
@@ -418,7 +459,7 @@ void messageReceived(String topic, String payload, char * bytes, unsigned int le
       char dev_id = payload[0];
       if (dev_id == DEV_ID)
         return;
-        
+
       payload.remove(0, 1);
       values[0] = payload.toInt();
     }
@@ -429,7 +470,7 @@ void messageReceived(String topic, String payload, char * bytes, unsigned int le
       char dev_id = payload[0];
       if (dev_id == DEV_ID)
         return;
-        
+
       payload.remove(0, 1);
       values[1] = payload.toInt();
     }

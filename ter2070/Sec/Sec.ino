@@ -1,5 +1,5 @@
-//#define NO_SERVER
-
+#define NO_SERVER
+#define TRACE
 #include <SoftwareSerial.h>
 #include <PCF8574.h>
 
@@ -9,7 +9,7 @@
 #define NOT_SET 250
 #define LED_ON LOW
 #define LED_OFF HIGH
-#define LED_GB 5 //white = 5+6
+#define LED_W 5
 #define LED_R 6 //6
 
 #define ProcessOutCircleInit_delay 100
@@ -40,23 +40,25 @@ PCF8574 in; // Светодиоды 1-8
 PCF8574 out; // Светодиоды 9-16
 Bounce btn = Bounce();
 
+bool firstGame = true;
+
 bool bLightLow;
 
 void lightOn()
 {
-  analogWrite(LED_GB, 255);
-  analogWrite(LED_R, 255);
+  analogWrite(LED_W, 255);
+  analogWrite(LED_R, 0);
 }
 
 void lightLow()
 {
-  analogWrite(LED_GB, 10);
-  analogWrite(LED_R, 10);
+  analogWrite(LED_W, 10);
+  analogWrite(LED_R, 0);
 }
 
 void lightOff()
 {
-  analogWrite(LED_GB, LOW);
+  analogWrite(LED_W, LOW);
   analogWrite(LED_R, LOW);
 }
 
@@ -130,12 +132,12 @@ void __init()
 }
 
 /*
-void playBtn()
-{
+  void playBtn()
+  {
 
   Serial.println("btn");
   //mp3_play(3);
-}*/
+  }*/
 
 void playWin()
 {
@@ -179,12 +181,15 @@ void setup() {
   pinMode(resetPin, OUTPUT);
   digitalWrite(resetPin, LOW);
 
-  pinMode(LED_GB, OUTPUT);
+  pinMode(LED_W, OUTPUT);
   pinMode(LED_R, OUTPUT);
   bLightLow = false;
   //lightOn();
 
-  //Serial.begin(9600);
+#ifdef TRACE
+  Serial.begin(9600);
+#endif
+
 #ifndef NO_SERVER
   Ethernet.begin(mac, ip);
   client.begin("192.168.0.91", net);
@@ -214,6 +219,11 @@ void setup() {
   __init();
   gameState = OutCircleInit;
 #endif
+
+
+#ifdef TRACE
+      Serial.println("setup done");
+#endif
 }
 
 void hard_Reboot()
@@ -236,6 +246,7 @@ void messageReceived(String topic, String payload, char * bytes, unsigned int le
     else if (payload == "i")
     {
       __init();
+      firstGame = true;
     }
     else if (payload == "p")
     {
@@ -243,8 +254,25 @@ void messageReceived(String topic, String payload, char * bytes, unsigned int le
     }
     else if (topic == "ter2070/sec/in" && payload == "1")
     {
+#ifdef TRACE
+      Serial.println("start..");
+#endif
       __init();
       gameState = OutCircleInit;
+#ifdef TRACE
+      Serial.println("started!");
+#endif
+    }
+    else if (topic == "ter2070/sec/in" && payload == "0")
+    {
+      
+#ifdef TRACE
+      Serial.println("stopping..");
+#endif
+      __init();
+#ifdef TRACE
+      Serial.println("stopped!");
+#endif
     }
     else if (topic == "ter2070/tlazers/activate/device")
     {
@@ -284,6 +312,7 @@ void connect() {
   // client.unsubscribe("/example");
 }
 
+bool started = false;
 void loop()
 {
   handleLight();
@@ -294,6 +323,14 @@ void loop()
     connect();
   }
 #endif
+
+  if (!started)
+  {
+    started = true;
+#ifdef TRACE
+      Serial.println("LOOP");
+#endif
+  }
 
   switch (gameState)
   {
@@ -373,13 +410,17 @@ void ProcessOutCircleInit()
 
   if (targetLedOut == NOT_SET)
   {
-    playLoopOutCircle();
+    if (firstGame)
+    {
+      playLoopOutCircle();
+      firstGame = false;
+    }
     targetLedOut = random(0, SIZE);
   }
 
   if (IsBtnClick())
   {
-   // playBtn();
+    // playBtn();
     out.digitalWrite(targetLedOut, LED_OFF);
     gameState = OutCircleRunning;
   }

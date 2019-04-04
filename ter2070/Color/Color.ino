@@ -22,6 +22,9 @@
 
 #define SENSOR_IN 4
 
+
+#define LED_COUNT 4
+
 #define neededAmount 3
 #define startAmount 2
 
@@ -58,7 +61,6 @@ enum BtnState
   Other
 };
 
-#define LED_COUNT 4
 byte leds[] = { 9, 8, 6, 4 };
 byte inputPins[] = {A0, A2, A3, A1};
 Bounce inputs[] = {Bounce(), Bounce(), Bounce(), Bounce()};

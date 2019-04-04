@@ -1,3 +1,9 @@
+/* DEPRECATED!
+
+SMOKE CONTROLLED IN DOOR2!
+
+/*
+
 #define TRACE
 //#define NO_SERVER
 #define resetPin 7
@@ -102,3 +108,4 @@ void hard_Reboot()
 {
   digitalWrite(resetPin, HIGH);
 }
+*/

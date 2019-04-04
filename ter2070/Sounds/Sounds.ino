@@ -1,5 +1,5 @@
-#define TRACE
-#define NO_SERVER
+//#define TRACE
+//#define NO_SERVER
 #define resetPin 7
 
 #include <Ethernet.h>
@@ -11,7 +11,7 @@
 #include <DFPlayer_Mini_Mp3.h>
 #include <nfc.h>
 
-#define ACC "tsound"
+#define ACC "tsound"  
 #define DEV_ID '3'
 
 byte mac[] = { 0x12, 0xAD, 0xBE, 0x01, 0xAD, 0xBE };
@@ -19,13 +19,6 @@ byte ip[] = { 192, 168, 0, 62 }; // <- change to match your network
 EthernetClient net;
 MQTTClient client;
 
-#define switch_1   3 //14
-#define switch_2   4 //15
-#define switch_3   17 //16
-#define switch_4   16 //17
-#define switch_5   15 //4
-#define switch_6   14 //3
-#define led_charging 2
 
 #define BATTERY_LIGHT_PIN 2
 
@@ -51,7 +44,7 @@ byte decs[BLOCKS][4] = {
   {134, 82, 168, 31}
 };
 
-SoftwareSerial mySerial(20, 9);
+SoftwareSerial mySerial(99, 9);
 LedControl lc = LedControl(5, 6, 8, 1);
 
 
@@ -60,7 +53,7 @@ int expected_vals[6] = {LOW, HIGH, HIGH, HIGH, LOW, HIGH};
 int needed_sounds[6] = {1, 2, 3, 4, 5, 6}; //"0001.mp3", "0002.mp3"...
 int bad_sounds[6] = {7, 8, 9, 10, 11, 12}; //"0007.mp3"...
 int pwrTransferSound = 14;
-int pins[6] = {3, 4, 17, 16, 15, 14};
+int pins[6] = {3, 4, A3, A2, A1, A0};
 int vals_prev[6];
 int vals[6];
 bool finished = false;
@@ -82,7 +75,7 @@ void updateCard(int card_id)
 void updatePower()
 {
 #ifndef NO_SERVER
-  client.publish("ter2070/e/genPwr", DEV_ID + String(power));
+  client.publish("ter2070/e/soundPwr", DEV_ID + String(power));
 #endif
 }
 
@@ -144,13 +137,10 @@ void setup() {
   pinMode(BATTERY_LIGHT_PIN, OUTPUT);
   digitalWrite (BATTERY_LIGHT_PIN, LOW);
 
-  pinMode(switch_1, INPUT);
-  pinMode(switch_2, INPUT);
-  pinMode(switch_3, INPUT);
-  pinMode(switch_4, INPUT);
-  pinMode(switch_5, INPUT);
-  pinMode(switch_6, INPUT);
-  pinMode(led_charging, OUTPUT);
+  for (int i = 0; i < 6; ++i)
+  {
+    pinMode(pins[i], INPUT);
+  }
   mySerial.begin(9600);
 
   // Initialize the MAX7219 device
@@ -163,6 +153,7 @@ void setup() {
   mp3_set_volume (40);
   delay (200);
 
+  mp3_stop();
   //mp3_play(fullMp3);
 
   for (int i = 0; i < 6; ++i)
@@ -300,14 +291,25 @@ void sound(bool on)
   }
 }
 
+void btnSound(bool needed, int i)
+{
+  if (!state)
+  {
+    mp3_play(needed ? needed_sounds[i] : bad_sounds[i]);
+  }
+}
+
+
 unsigned long lastMillis = 0;
 unsigned long long startBattery = 0;
 unsigned long long lastUpdate = 0;
 bool powerLeft;
 int found = -1;
 bool toCard = false;
-bool hallPrevVal = HIGH;
 void loop() {
+  
+  setPower();
+  
 #ifndef NO_SERVER
   client.loop();
 
@@ -325,7 +327,8 @@ void loop() {
     {
       bool isCorrect = expected_vals[i] == val;
       delay(100);
-      mp3_play(isCorrect ? needed_sounds[i] : bad_sounds[i]);
+
+      btnSound(isCorrect, i);
 
       vals[i] = val;
     }
@@ -334,7 +337,20 @@ void loop() {
       allCorrect = false;
   }
 
-  setPower();
+  if (allCorrect && !finished)
+  {
+    delay(500);
+    sound(true);
+    for (int i = 0; i < SND_RES_VAL; ++i)
+    {
+      power += 1;
+      setPower();
+      delay(10);
+    }
+    sound(false);
+    finished = true;
+  }
+  
   sta = nfc.InListPassiveTarget(buf);
 
   if (sta && buf[0] == 4)
@@ -390,11 +406,12 @@ void loop() {
 
         powerLeft = toCard ? power : values[found];
 
+
+        light(false);
+        delay(5);
         if (powerLeft)
           light(true);
-        delay(5);
-        light(false);
-
+          
         powerLeft ? sound(true) : sound(false);
       }
     }
@@ -406,12 +423,6 @@ void loop() {
     sound(false);
     startBattery = 0;
     clearBattery();
-  }
-
-  if (allCorrect && !finished)
-  {
-    power = SND_RES_VAL;
-    finished = true;
   }
 }
 
@@ -440,7 +451,7 @@ void messageReceived(String topic, String payload, char * bytes, unsigned int le
       values[1] = payload.toInt();
     }
 
-    if (topic.equals("ter2070/e/sndPwr"))
+    if (topic.equals("ter2070/e/soundPwr"))
     {
       //ignore self events
       char dev_id = payload[0];

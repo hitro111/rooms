@@ -1,5 +1,6 @@
 //#define TRACE
 //#define NO_SERVER
+#define MP3
 #define resetPin 7
 
 #include <Ethernet.h>
@@ -10,9 +11,11 @@
 #include <Wire.h>
 #include "LedControl.h"
 
+#ifdef MP3
 #include <SoftwareSerial.h>
 #include <DFPlayer_Mini_Mp3.h>
-SoftwareSerial mySerial(52, 1);
+SoftwareSerial mySerial(63, 1);
+#endif
 
 #define ACC "tcpu"
 byte mac[] = { 0x14, 0xAD, 0xBE, 0x01, 0xAD, 0xBE };
@@ -44,14 +47,18 @@ EthernetClient net;
 MQTTClient client;
 
 #define BLOCKS 2
-#define BLOCK1_VAL 180
-#define BLOCK2_VAL 112
-#define CPU_VAL 0
-#define CPU_NEEDED_VAL 100
+#define BLOCK1_VAL 550
+#define BLOCK2_VAL 820
+#define CPU_VAL 9
+#define CPU_NEEDED_VAL 2000
 #define FAIL_SHOT_VAL 10
+#define CARD_LIMIT 999
 
 int values[BLOCKS] = {BLOCK1_VAL, BLOCK2_VAL};
 volatile int power = CPU_VAL;
+
+int prevVal = -1;
+int bPrevVal = -1;
 
 byte bufs[BLOCKS][4] = {
   {134, 1, 219, 31},
@@ -64,6 +71,7 @@ byte decs[BLOCKS][4] = {
 };
 
 bool shotReady = false;
+bool finished = false;
 int pwrTransferSound = 14;
 
 void updateCard(int id)
@@ -71,11 +79,11 @@ void updateCard(int id)
 #ifndef NO_SERVER
   if (id == 0)
   {
-    //client.publish("ter2070/e/block1Pwr", DEV_ID + String(values[id]));
+    client.publish("ter2070/e/block1Pwr", DEV_ID + String(values[id]));
   }
   else
   {
-    //client.publish("ter2070/e/block2Pwr", DEV_ID + String(values[id]));
+    client.publish("ter2070/e/block2Pwr", DEV_ID + String(values[id]));
   }
 #endif
 }
@@ -83,7 +91,7 @@ void updateCard(int id)
 void updatePower()
 {
 #ifndef NO_SERVER
-  //client.publish("ter2070/e/cpuPwr", DEV_ID + String(power));
+  client.publish("ter2070/e/cpuPwr", DEV_ID + String(power));
 #endif
 }
 
@@ -102,16 +110,19 @@ void __init()
   power = CPU_VAL;
 
   shotReady = false;
+  finished = false;
+
+  prevVal = bPrevVal = -1;
 }
 
 bool isCard1(int val)
 {
-  return val < 800 && val > 300;
+  return val < 300 && val > 100;
 }
 
 bool isCard2(int val)
 {
-  return val < 100;
+  return val < 10;
 }
 
 void setup() {
@@ -173,16 +184,18 @@ void setup() {
   pinMode(BTN_SHOOT, INPUT);
   pinMode(PWR_CABLE, INPUT);
 
+#ifdef MP3
   mySerial.begin (9600);
   mp3_set_serial (mySerial);
   mp3_set_volume (30);
+  mp3_stop();
+#endif
   __init();
 }
 
 bool isBatteryDirty = false;
 bool isDisplayDirty = false;
 
-int prevVal = -1;
 void setPower()
 {
   int p = power;
@@ -205,7 +218,6 @@ void setPower()
   }
 }
 
-int bPrevVal = -1;
 void setBattery(int card)
 {
   int p = values[card];
@@ -219,7 +231,8 @@ void setBattery(int card)
     int n10 = p % 10;
     p /= 10;
     int n100 = p % 10;
-
+    
+    lc.setRow(0, 4, B00000000);
     lc.setDigit(0, 5, n100, false);
     lc.setDigit(0, 6, n10, false);
     lc.setDigit(0, 7, n1, false);
@@ -230,6 +243,7 @@ void clearBattery()
 {
   if (isBatteryDirty)
   {
+    lc.setRow(0, 4, B00000000);
     lc.setRow(0, 5, B00000000);
     lc.setRow(0, 6, B00000000);
     lc.setRow(0, 7, B00000000);
@@ -253,8 +267,13 @@ bool transferPower(int card, bool toCard, int amount)
   if (toCard)
   {
     amount = power - amount >= 0 ? amount : power;
-    power -= amount;
-    values[card] += amount;
+
+    if (values[card] + amount < CARD_LIMIT)
+    {
+      values[card] += amount;
+      power -= amount;
+    }
+
     return power != 0;
   }
   else
@@ -293,6 +312,7 @@ void light(bool on)
 bool state = false;
 void sound(bool on)
 {
+#ifdef MP3
   if (on && !state)
   {
     state = true;
@@ -309,10 +329,18 @@ void sound(bool on)
     mp3_stop();
     state = false;
   }
+#endif
 }
 
 void gun_fire_fucked_up() {
+#ifdef TRACE
+  Serial.println("SHOT FAILED");
+#endif
+#ifndef NO_SERVER
+  client.publish("ter2070/e/gunshot", "2");
+#endif
 
+  delay(450);
 
   digitalWrite(LightGun_front_led, LOW);
   digitalWrite(LightGun_neon, HIGH);
@@ -320,8 +348,9 @@ void gun_fire_fucked_up() {
   analogWrite (LightGun_led_strips, 10);
 
   delay (100);
+#ifdef MP3
   mp3_play (12);
-
+#endif
 
   digitalWrite(LightGun_neon, LOW);
   analogWrite (LightGun_led_strips, 1);
@@ -363,6 +392,14 @@ void gun_fire_fucked_up() {
 }
 
 void gun_charging() {
+#ifdef TRACE
+  Serial.println("CHARGING");
+#endif
+#ifndef NO_SERVER
+  client.publish("ter2070/e/gunshot", "0");
+#endif
+
+  delay(750);
 
   analogWrite  (LightGun_led_strips, 0);
   digitalWrite(LightGun_front_led, LOW);
@@ -370,7 +407,9 @@ void gun_charging() {
   digitalWrite(NEON_LIGHT_PIN, HIGH);
 
   delay (100);
+#ifdef MP3
   mp3_play (11);
+#endif
   neon_1();
   analogWrite  (LightGun_led_strips, 1);
   neon_1();
@@ -385,11 +424,19 @@ void gun_charging() {
 }
 
 void gun_fire() {
+#ifdef TRACE
+  Serial.println("START SHOT");
+#endif
+#ifndef NO_SERVER
+  client.publish("ter2070/e/gunshot", "3");
+#endif
   digitalWrite(LightGun_front_led, LOW);
   digitalWrite(LightGun_neon, HIGH);
   digitalWrite(NEON_LIGHT_PIN, LOW);
   delay (100);
+#ifdef MP3
   mp3_play (13);
+#endif
 
   for (int i = 10; i < 50; i++)
   {
@@ -557,11 +604,12 @@ void loop() {
 
   if (!client.connected()) {
     connect();
-
-    Serial.println("Connected");
   }
 #endif
 
+  if (finished)
+    return;
+    
   if (analogRead(PWR_CABLE) < 500 && power >= CPU_NEEDED_VAL)
   {
     sound(true);
@@ -577,7 +625,16 @@ void loop() {
     }
     digitalWrite(NEON_LIGHT_PIN, LOW);
     sound(false);
-
+    
+    client.publish("ter2070/e/cpuFullPwr", "1");
+    
+    lc.clearDisplay(0);
+    
+    for (int i=0; i < 8; ++i)
+    {
+      lc.setChar(0, i, '-', false);
+    }
+    
     shotReady = true;
     digitalWrite(NEON_LIGHT_PIN, HIGH);
   }
@@ -593,6 +650,7 @@ void loop() {
     if (isCard1(analogRead(CARD1_IN)) && isCard2(analogRead(CARD2_IN)))
     {
       gun_fire();
+      finished = true;
     }
     else
     {
@@ -613,78 +671,68 @@ void loop() {
   digitalWrite(CARD1_LED, isCard1(analogRead(CARD1_IN)));
   digitalWrite(CARD2_LED, isCard2(analogRead(CARD2_IN)));
 
-  sta = nfc.InListPassiveTarget(buf);
-
-  if (sta && buf[0] == 4)
+  if (!shotReady)
   {
-    //nfc.puthex(buf + 1, buf[0]);
+    sta = nfc.InListPassiveTarget(buf);
 
-    u32 i;
-    //134 123 232 31 - наружу
-    //134 82 168 31 - внутрь
-    for (i = 0; i < buf[0]; i++)
+    if (sta && buf[0] == 4)
     {
-      //Serial.print(buf[i + 1]);
-      //Serial.write(' ');
-    }
-
-    //Serial.println();
-
-    for (int i = 0; i < BLOCKS; ++i)
-    {
-      if (arr_equal(bufs[i], buf + 1, 4))
+      for (int i = 0; i < BLOCKS; ++i)
       {
-        found = i;
-        toCard = true;
-      }
-      else if (arr_equal(decs[i], buf + 1, 4))
-      {
-        found = i;
-        toCard = false;
-      }
-    }
-
-    if (found >= 0)
-    {
-      setPower();
-      setBattery(found);
-
-      if (startBattery == 0)
-      {
-        startBattery = millis();
-      }
-
-      if (millis() - startBattery > 2000)
-      {
-        if (millis() - lastUpdate > 50)
+        if (arr_equal(bufs[i], buf + 1, 4))
         {
-          lastUpdate = millis();
+          found = i;
+          toCard = true;
+        }
+        else if (arr_equal(decs[i], buf + 1, 4))
+        {
+          found = i;
+          toCard = false;
+        }
+      }
 
-          transferPower(found, toCard, 1);
+      if (found >= 0)
+      {
+        setPower();
+        setBattery(found);
 
-          setPower();
-          setBattery(found);
+        if (startBattery == 0)
+        {
+          startBattery = millis();
         }
 
-        powerLeft = toCard ? power : values[found];
+        if (millis() - startBattery > 2000)
+        {
+          if (millis() - lastUpdate > 50)
+          {
+            lastUpdate = millis();
+
+            transferPower(found, toCard, 1);
+
+            setPower();
+            setBattery(found);
+          }
+
+          powerLeft = toCard ? power : values[found];
 
 
-        light(false);
-        delay(5);
-        if (powerLeft)
-          light(true);
+          light(false);
+          delay(5);
+          if (powerLeft)
+            light(true);
 
-        powerLeft ? sound(true) : sound(false);
+          powerLeft ? sound(true) : sound(false);
+        }
       }
     }
-  }
-  else
-  {
-    found = -1;
-    light(false);
-    sound(false);
-    startBattery = 0;
-    clearBattery();
+    else
+    {
+      found = -1;
+      light(false);
+      sound(false);
+      startBattery = 0;
+      clearBattery();
+    }
   }
 }
 

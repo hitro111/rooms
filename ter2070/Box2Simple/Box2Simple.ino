@@ -1,6 +1,6 @@
 //637822
 //#define TRACE
-//#define NO_SERVER
+#define NO_SERVER
 #define resetPin 7
 
 #include <Ethernet.h>
@@ -241,7 +241,7 @@ void setup() {
 
   pinMode(LOCK, OUTPUT);
   digitalWrite(LOCK, HIGH);
-  
+
   pinMode(BUZ_PIN, OUTPUT);
   digitalWrite(BUZ_PIN, LOW);
 
@@ -338,8 +338,9 @@ void loop() {
         isOk = true;
         digitalWrite(LOCK, LOW);
         setOpenText();
-
+#ifndef NO_SERVER
         client.publish("ter2070/tboxsimple/out", "1");
+#endif
       }
       else
       {
@@ -373,7 +374,9 @@ void messageReceived(String topic, String payload, char * bytes, unsigned int le
     }
     else if (payload == "p")
     {
+#ifndef NO_SERVER
       client.publish("ter2070/ping/out", ACC);
+#endif
     }
   }
 }

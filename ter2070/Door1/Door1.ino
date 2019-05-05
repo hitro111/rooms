@@ -33,9 +33,11 @@ u8 buf[32], sta;
 //JsonObject root = jsonBuffer.to<JsonObject>();
 
 #define BLOCKS 2
-#define BLOCK1_VAL 180
-#define BLOCK2_VAL 112
-#define DOOR1_VAL 167
+#define BLOCK1_VAL 550
+#define BLOCK2_VAL 820
+#define DOOR1_VAL 17
+#define PWR_NEEDED 200
+#define CARD_LIMIT 999
 
 int values[BLOCKS] = {BLOCK1_VAL, BLOCK2_VAL};
 int power = DOOR1_VAL;
@@ -213,8 +215,12 @@ bool transferPower(int card, bool toCard, int amount)
   if (toCard)
   {
     amount = power - amount >= 0 ? amount : power;
-    power -= amount;
-    values[card] += amount;
+
+    if (values[card] + amount < CARD_LIMIT)
+    {
+      values[card] += amount;
+      power -= amount;
+    }
 
     return power != 0;
   }
@@ -260,9 +266,9 @@ void loop() {
     fuseOff = false;
     setPower();
 
-    if (analogRead(BTN_IN) < 500 && power >= 250)
+    if (analogRead(BTN_IN) < 500 && power >= PWR_NEEDED)
     {
-      for (int i = 0; i < 250; ++i)
+      for (int i = 0; i < PWR_NEEDED; ++i)
       {
         power -= 1;
         setPower();
@@ -388,7 +394,7 @@ void messageReceived(String topic, String payload, char * bytes, unsigned int le
       if (dev_id == DEV_ID)
         return;
 
-      payload.remove(0,1);
+      payload.remove(0, 1);
       values[0] = payload.toInt();
     }
 
@@ -399,7 +405,7 @@ void messageReceived(String topic, String payload, char * bytes, unsigned int le
       if (dev_id == DEV_ID)
         return;
 
-      payload.remove(0,1);
+      payload.remove(0, 1);
       values[1] = payload.toInt();
     }
 
@@ -410,7 +416,7 @@ void messageReceived(String topic, String payload, char * bytes, unsigned int le
       if (dev_id == DEV_ID)
         return;
 
-      payload.remove(0,1);
+      payload.remove(0, 1);
       power = payload.toInt();
     }
   }

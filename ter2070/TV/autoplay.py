@@ -58,6 +58,10 @@ while True:
             except: 
                 pass
             break
+        elif end - start > 2.9:
+            file = '/home/pi/Videos/fail.mp4'
+        elif end - start > 1.9:
+            file = '/home/pi/Videos/success.mp4'
         elif end - start > 1.1:
             file = '/home/pi/Videos/5.mp4'
         elif end - start > 0.9:

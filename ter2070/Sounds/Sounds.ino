@@ -11,7 +11,7 @@
 #include <DFPlayer_Mini_Mp3.h>
 #include <nfc.h>
 
-#define ACC "tsound"  
+#define ACC "tsound"
 #define DEV_ID '3'
 
 byte mac[] = { 0x12, 0xAD, 0xBE, 0x01, 0xAD, 0xBE };
@@ -26,10 +26,11 @@ NFC_Module nfc;
 u8 buf[32], sta;
 
 #define BLOCKS 2
-#define BLOCK1_VAL 180
-#define BLOCK2_VAL 112
-#define SND_INIT_VAL 0
-#define SND_RES_VAL 333
+#define BLOCK1_VAL 550
+#define BLOCK2_VAL 820
+#define SND_INIT_VAL 21
+#define SND_RES_VAL 800
+#define CARD_LIMIT 999
 
 int values[BLOCKS] = {BLOCK1_VAL, BLOCK2_VAL};
 int power = SND_INIT_VAL;
@@ -57,6 +58,9 @@ int pins[6] = {3, 4, A3, A2, A1, A0};
 int vals_prev[6];
 int vals[6];
 bool finished = false;
+
+int prevVal = -1;
+int bPrevVal = -1;
 
 void updateCard(int card_id)
 {
@@ -93,6 +97,8 @@ void __init()
   values[1] = BLOCK2_VAL;
   power = SND_INIT_VAL;
   finished = false;
+  
+  prevVal = bPrevVal = -1;
 }
 
 void setup() {
@@ -172,7 +178,6 @@ void setup() {
 bool isBatteryDirty = false;
 bool isDisplayDirty = false;
 
-int prevVal = -1;
 void setPower()
 {
   int p = power;
@@ -195,7 +200,6 @@ void setPower()
   }
 }
 
-int bPrevVal = -1;
 void setBattery(int card)
 {
   int p = values[card];
@@ -243,8 +247,13 @@ bool transferPower(int card, bool toCard, int amount)
   if (toCard)
   {
     amount = power - amount >= 0 ? amount : power;
-    power -= amount;
-    values[card] += amount;
+
+    if (values[card] + amount < CARD_LIMIT)
+    {
+      values[card] += amount;
+      power -= amount;
+    }
+
     return power != 0;
   }
   else
@@ -307,9 +316,9 @@ bool powerLeft;
 int found = -1;
 bool toCard = false;
 void loop() {
-  
+
   setPower();
-  
+
 #ifndef NO_SERVER
   client.loop();
 
@@ -350,7 +359,7 @@ void loop() {
     sound(false);
     finished = true;
   }
-  
+
   sta = nfc.InListPassiveTarget(buf);
 
   if (sta && buf[0] == 4)
@@ -411,7 +420,7 @@ void loop() {
         delay(5);
         if (powerLeft)
           light(true);
-          
+
         powerLeft ? sound(true) : sound(false);
       }
     }

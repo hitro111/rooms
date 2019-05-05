@@ -1,4 +1,4 @@
-#define NO_SERVER
+//#define NO_SERVER
 #define TRACE
 #include <SoftwareSerial.h>
 #include <PCF8574.h>
@@ -40,9 +40,8 @@ PCF8574 in; // Светодиоды 1-8
 PCF8574 out; // Светодиоды 9-16
 Bounce btn = Bounce();
 
-bool firstGame = true;
-
 bool bLightLow;
+bool quiet = false;
 
 void lightOn()
 {
@@ -124,6 +123,7 @@ void SetAllIn(bool on);
 
 void __init()
 {
+  quiet = false;
   Reset();
   SetAllIn(false);
   SetAllOut(false);
@@ -222,7 +222,7 @@ void setup() {
 
 
 #ifdef TRACE
-      Serial.println("setup done");
+  Serial.println("setup done");
 #endif
 }
 
@@ -246,7 +246,6 @@ void messageReceived(String topic, String payload, char * bytes, unsigned int le
     else if (payload == "i")
     {
       __init();
-      firstGame = true;
     }
     else if (payload == "p")
     {
@@ -263,9 +262,21 @@ void messageReceived(String topic, String payload, char * bytes, unsigned int le
       Serial.println("started!");
 #endif
     }
+    else if (topic == "ter2070/sec/in" && payload == "2")
+    {
+#ifdef TRACE
+      Serial.println("start..");
+#endif
+      __init();
+      quiet = true;
+      gameState = OutCircleInit;
+#ifdef TRACE
+      Serial.println("started!");
+#endif
+    }
     else if (topic == "ter2070/sec/in" && payload == "0")
     {
-      
+
 #ifdef TRACE
       Serial.println("stopping..");
 #endif
@@ -312,7 +323,6 @@ void connect() {
   // client.unsubscribe("/example");
 }
 
-bool started = false;
 void loop()
 {
   handleLight();
@@ -323,14 +333,6 @@ void loop()
     connect();
   }
 #endif
-
-  if (!started)
-  {
-    started = true;
-#ifdef TRACE
-      Serial.println("LOOP");
-#endif
-  }
 
   switch (gameState)
   {
@@ -410,10 +412,9 @@ void ProcessOutCircleInit()
 
   if (targetLedOut == NOT_SET)
   {
-    if (firstGame)
+    if (!quiet)
     {
       playLoopOutCircle();
-      firstGame = false;
     }
     targetLedOut = random(0, SIZE);
   }
@@ -453,6 +454,12 @@ void ProcessOutCircleRunning()
     SetAllOut(false);
 
     out.digitalWrite(currentOut, LED_ON);
+    
+    if (quiet)
+    {
+      playLoopOutCircle();
+    }
+    quiet = false;
   }
 
   if (IsBtnClick())

@@ -25,7 +25,7 @@
 
 #define LED_COUNT 4
 
-#define neededAmount 3
+#define neededAmount 4
 #define startAmount 2
 
 #include <DFPlayer_Mini_Mp3.h>

@@ -1,7 +1,5 @@
-//добавить кабель и пушку
-
 #define TRACE
-#define NO_SERVER
+//#define NO_SERVER
 #define resetPin 7
 
 #include <Ethernet.h>
@@ -32,11 +30,12 @@ NFC_Module nfc;
 u8 buf[32], sta;
 
 #define BLOCKS 2
-#define BLOCK1_VAL 180
-#define BLOCK2_VAL 112
-#define STAND_VAL 500
-#define HAND_PWR 20
-#define GUN_PWR 40
+#define BLOCK1_VAL 550
+#define BLOCK2_VAL 820
+#define STAND_VAL 1
+#define HAND_PWR 10
+#define GUN_PWR 20
+#define CARD_LIMIT 999
 
 #define GUN_PIN 5
 #define HAND_LED 3
@@ -46,6 +45,9 @@ Servo hand_servo; // объявляем переменную servo типа "han
 
 int values[BLOCKS] = {BLOCK1_VAL, BLOCK2_VAL};
 int power = STAND_VAL;
+
+int prevVal = -1;
+int bPrevVal = -1;
 
 byte bufs[BLOCKS][4] = {
   {134, 1, 219, 31},
@@ -88,6 +90,8 @@ void __init()
   values[0] = BLOCK1_VAL;
   values[1] = BLOCK2_VAL;
   power = STAND_VAL;
+  
+  prevVal = bPrevVal = -1;
 }
 
 void setup() {
@@ -153,7 +157,6 @@ bool isBatteryDirty = false;
 bool isDisplayDirty = false;
 bool isTimerDirty = false;
 
-int prevVal = -1;
 void setPower()
 {
   int p = power;
@@ -177,7 +180,6 @@ void setPower()
   }
 }
 
-int bPrevVal = -1;
 void setBattery(int card)
 {
   int p = values[card];
@@ -225,8 +227,12 @@ bool transferPower(int card, bool toCard, int amount)
   if (toCard)
   {
     amount = power - amount >= 0 ? amount : power;
-    power -= amount;
-    values[card] += amount;
+
+    if (values[card] + amount < CARD_LIMIT)
+    {
+      values[card] += amount;
+      power -= amount;
+    }
 
     return power != 0;
   }
@@ -264,6 +270,7 @@ void moveHand()
 
   analogWrite(HAND_LED, 120);
   hand_servo.write(120);
+  delay(1000);
 #ifndef NO_SERVER
   client.loop();
 #endif
@@ -276,7 +283,7 @@ void moveHand()
   {
     hand_servo.write(i);
     analogWrite(HAND_LED, i);
-    delay(35);
+    delay(25);
   }
 #ifndef NO_SERVER
   client.loop();
@@ -286,7 +293,7 @@ void moveHand()
   {
     hand_servo.write(i);
     analogWrite(HAND_LED, i);
-    delay(45);
+    delay(15);
   }
 }
 
@@ -312,7 +319,6 @@ unsigned long long lastUpdate = 0;
 bool powerLeft;
 int found = -1;
 bool toCard = false;
-bool fuseOff;
 void loop() {
 #ifndef NO_SERVER
   client.loop();

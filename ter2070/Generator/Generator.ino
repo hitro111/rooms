@@ -29,9 +29,9 @@ PCF8574 pcf2;
 #endif
 
 #define BLOCKS 2
-#define BLOCK1_VAL 180
-#define BLOCK2_VAL 112
-#define GEN_VAL 66
+#define BLOCK1_VAL 550
+#define BLOCK2_VAL 820
+#define GEN_VAL 63
 #define POWER_LIMIT 999
 #define CARD_LIMIT 999
 

@@ -18,7 +18,7 @@ SoftwareSerial mySerial(52, 9); // RX, TX
 #define EYE_BROKEN_MIN_ON_TIME 500
 #define EYE_BROKEN_MAX_ON_TIME 2000
 #define EYE_BROKEN_MIN_OFF_TIME 500
-#define EYE_BROKEN_MAX_OFF_TIME 10000
+#define EYE_BROKEN_MAX_OFF_TIME 10000d
 #define EYE_BROKEN_HIGH_MIN_VAL 10
 #define EYE_BROKEN_HIGH_MAX_VAL 255
 #define EYE_BROKEN_LOW_MIN_VAL 0
@@ -265,6 +265,9 @@ void loop() {
   }
 #endif
 
+  if (dead)
+    return;
+
   handleBrokenEye();
 
   byte sVal;
@@ -396,11 +399,12 @@ void messageReceived(String topic, String payload, char * bytes, unsigned int le
       client.publish("ter2070/ping/out", ACC);
     }
 
-    if (topic == "ter2070/e/gunshot")
+    if (topic == "ter2070/e/gunshot" && payload == "1")
     {
       dead = true;
       death();
       stopAll();
+      client.publish("ter2070/e/robotDead", "1");
     }
   }
 }

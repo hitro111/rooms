@@ -1,7 +1,7 @@
 //pwd = 2 (Yellow) 7 (Orange) 8 (green) 4 (red)
 //
 //#define TRACE
-//#define NO_SERVER
+#define NO_SERVER
 #define resetPin 7
 
 #include <Ethernet.h>
@@ -242,7 +242,7 @@ void setup() {
 
   pinMode(BUZ_PIN, OUTPUT);
   digitalWrite(BUZ_PIN, LOW);
-  
+
   lcd.init();                       // Инициализация lcd
   lcd.backlight();                  // Включаем подсветку
   lcd.createChar(0, letter_t);
@@ -327,15 +327,16 @@ void loop() {
         setOpenText();
         isOk = true;
         digitalWrite(LOCK, LOW);
-
+#ifndef NO_SERVER
         client.publish("ter2070/tboxblink/out", "1");
+#endif
       }
       else
       {
         digitalWrite(BUZ_PIN, HIGH);
         writeWrongPwd();
         digitalWrite(BUZ_PIN, LOW);
-        
+
         resetAll();
       }
     }
@@ -439,7 +440,9 @@ void messageReceived(String topic, String payload, char * bytes, unsigned int le
     }
     else if (payload == "p")
     {
+#ifndef NO_SERVER
       client.publish("ter2070/ping/out", ACC);
+#endif
     }
   }
 }

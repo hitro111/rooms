@@ -5,7 +5,7 @@
 
 #define BACKLIGHT_PIN 9
 
-const int ConnectPin = 2;
+const int ConnectPin = A0;
 int buz = 3;
 int a = 5;
 int b = 10;
@@ -64,7 +64,7 @@ void handleInterrupted()
 
 void checkInterrupt()
 {
-  if (digitalRead(ConnectPin) == HIGH)
+  if (analogRead(ConnectPin) > 600)
   {
     doInterrupt();
   }
@@ -72,7 +72,7 @@ void checkInterrupt()
 
 void loop()
 {
-  if (digitalRead(ConnectPin) == 0 && !processingStarted)
+  if (analogRead(ConnectPin) < 400 && !processingStarted)
   {
     processingStarted = true;
     interrupted = false;
@@ -544,9 +544,9 @@ void connection()  // Подключен
 
 
 
-#define CODE_SIZE 4
+#define CODE_SIZE 6
 unsigned long long grab_time = 12000;
-int code[CODE_SIZE] = {2, 7, 8, 4};
+int code[CODE_SIZE] = {6, 3, 7, 8, 2, 2};
 int seq[CODE_SIZE];
 
 void selection1()  // Подбор Кода
@@ -679,4 +679,3 @@ void selection1()  // Подбор Кода
   noTone(buz);
 #endif
 }
-

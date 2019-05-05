@@ -5,13 +5,17 @@ Box1Blink 		53		03		tboxblink
 Box2Simple 		54		04		tbox2simple
 Lazers			55		05		tlazers
 Door2			56		06		tdoor2
-Door1			57		07		tdoor1			1
+Door1			57		07		tdoor1			1 (+17 -200)
 Tumblers		58		08		ttumblr
 DistancesRobot	59		09		tdistance
-Generator		61		11		tgen			2
+Generator		61		11		tgen			2 (+63)
 Server											0
 Smoke			60		10		tsmoke
-Sounds			62		12		tsound			3
-TV				63		13		ttv				4
-CPU				64		14		tcpu			5
-Stand			65		15		tstand			6
+Sounds			62		12		tsound			3 (+21 +800)
+TV				63		13		ttv				4 (+2 -100)
+CPU				64		14		tcpu			5 (+9 -2000 -10(shot))
+Stand			65		15		tstand			6 (+1 -10(arm) / -20(gun))
+Table			66		16		ttable			7 (+4 -30(light) / -5(music))
+LightControl	67		17		tlight
+Block1											(+550)
+Block2											(+820)

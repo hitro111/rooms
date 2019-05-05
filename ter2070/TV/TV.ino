@@ -1,4 +1,4 @@
-//#define TRACE
+#define TRACE
 //#define NO_SERVER
 #define resetPin 7
 //#define DIAGNOSTICS
@@ -34,6 +34,10 @@
 #define ON_DELAY 200
 #define ENDVID_DELAY 200
 #define EXIT_DELAY 5000
+
+#define SUCCESS_DELAY 2000
+#define FAIL_DELAY 3000
+
 int video_delay[] = {400, 600, 800, 1000, 1200};
 
 byte mac[] = { 0x13, 0xAD, 0xBE, 0x01, 0xAD, 0xBE };
@@ -47,10 +51,11 @@ NFC_Module nfc;
 u8 buf[32], sta;
 
 #define BLOCKS 2
-#define BLOCK1_VAL 180
-#define BLOCK2_VAL 112
-#define TV_VAL 77
-#define TV_POWER_NEEDED 50
+#define BLOCK1_VAL 550
+#define BLOCK2_VAL 820
+#define TV_VAL 2
+#define TV_POWER_NEEDED 100
+#define CARD_LIMIT 999
 
 int values[BLOCKS] = {BLOCK1_VAL, BLOCK2_VAL};
 int power = TV_VAL;
@@ -76,6 +81,9 @@ int power = TV_VAL;
 
 char lastSent = NO_CMD;
 bool tvOn = false;
+
+int prevVal = -1;
+int bPrevVal = -1;
 
 byte bufs[BLOCKS][4] = {
   {134, 1, 219, 31},
@@ -123,6 +131,8 @@ void __init()
   power = TV_VAL;
   tvOn = false;
   lastSent = NO_CMD;
+  
+  prevVal = bPrevVal = -1;
 }
 
 void setup() {
@@ -178,7 +188,7 @@ void setup() {
   digitalWrite (BATTERY_LIGHT_PIN, LOW);
   digitalWrite (CARD_LED, LOW);
 
-  __init();  
+  __init();
 
 #ifdef TRACE
   Serial.println(F("setup OK"));
@@ -188,7 +198,6 @@ void setup() {
 bool isBatteryDirty = false;
 bool isDisplayDirty = false;
 
-int prevVal = -1;
 void setPower()
 {
   int p = power;
@@ -205,7 +214,6 @@ void setPower()
     p /= 10;
     int n1000 = p % 10;
 
-    Serial.println("setBattery");
     lc.setDigit(0, 0, n1000, false);
     lc.setDigit(0, 1, n100, false);
     lc.setDigit(0, 2, n10, false);
@@ -213,7 +221,6 @@ void setPower()
   }
 }
 
-int bPrevVal = -1;
 void setBattery(int card)
 {
   int p = values[card];
@@ -228,7 +235,6 @@ void setBattery(int card)
     p /= 10;
     int n100 = p % 10;
 
-    Serial.println("setBattery");
     lc.setDigit(0, 5, n100, false);
     lc.setDigit(0, 6, n10, false);
     lc.setDigit(0, 7, n1, false);
@@ -239,7 +245,6 @@ void clearBattery()
 {
   if (isBatteryDirty)
   {
-    Serial.println("clearBattery");
     lc.setRow(0, 5, B00000000);
     lc.setRow(0, 6, B00000000);
     lc.setRow(0, 7, B00000000);
@@ -252,7 +257,6 @@ void clearDisplay()
 {
   if (isBatteryDirty || isDisplayDirty)
   {
-    Serial.println("clearDisplay");
     lc.clearDisplay(0);
     isBatteryDirty = isDisplayDirty = false;
     bPrevVal = prevVal = -1;
@@ -264,8 +268,13 @@ bool transferPower(int card, bool toCard, int amount)
   if (toCard)
   {
     amount = power - amount >= 0 ? amount : power;
-    power -= amount;
-    values[card] += amount;
+
+    if (values[card] + amount < CARD_LIMIT)
+    {
+      values[card] += amount;
+      power -= amount;
+    }
+    
     return power != 0;
   }
   else
@@ -352,6 +361,28 @@ void CMD_EXIT()
   lastSent = NO_CMD;
   digitalWrite(TV_PIN, HIGH);
   delay(EXIT_DELAY);
+  digitalWrite(TV_PIN, LOW);
+}
+
+void CMD_SUCCESS()
+{
+#ifdef TRACE
+  Serial.println("SUCCESS");
+#endif
+  lastSent = NO_CMD;
+  digitalWrite(TV_PIN, HIGH);
+  delay(SUCCESS_DELAY);
+  digitalWrite(TV_PIN, LOW);
+}
+
+void CMD_FAIL()
+{
+#ifdef TRACE
+  Serial.println("FAIL");
+#endif
+  lastSent = NO_CMD;
+  digitalWrite(TV_PIN, HIGH);
+  delay(FAIL_DELAY);
   digitalWrite(TV_PIN, LOW);
 }
 
@@ -454,10 +485,6 @@ void loop() {
   {
     int v = analogRead(CARD_PIN);
 
-#ifdef TRACE
-    Serial.println(v);
-#endif
-   
     if (v > NOCARD_VAL - CARD_EPS)
     {
       digitalWrite(CARD_LED, LOW);
@@ -592,6 +619,16 @@ void messageReceived(String topic, String payload, char * bytes, unsigned int le
       CMD_EXIT();
     }
 
+    if (topic.equals("ter2070/e/robotDead"))
+    {
+      CMD_SUCCESS();
+    }
+
+    if (topic.equals("ter2070/c/tvFail"))
+    {
+      CMD_FAIL();
+    }
+
     if (payload == "r")
     {
       hard_Reboot();
@@ -621,6 +658,13 @@ void connect() {
   client.subscribe("ter2070/reset");
   client.subscribe("ter2070/ping/in");
   client.subscribe("ter2070/ttv/reset");
+  client.subscribe("ter2070/e/robotDead");
+  client.subscribe("ter2070/c/tvFail");
+  client.subscribe("ter2070/c/tvOff");
+  
+  client.subscribe("ter2070/e/block1Pwr");
+  client.subscribe("ter2070/e/block2Pwr");
+  client.subscribe("ter2070/e/tvPwr");
   // client.unsubscribe("/example");
 }
 

@@ -62,6 +62,16 @@ namespace MqttTest.Mqtt
             Publish("ter2070/tlazers/activate/device", "0");
         }
 
+        public void Lazers_OnManual()
+        {
+            Publish("ter2070/tlazers/activate/device", "2");
+        }
+
+        public void Lazers_OffManual()
+        {
+            Publish("ter2070/tlazers/activate/device", "3");
+        }
+
         public void Lazers_Init()
         {
             Publish("ter2070/tlazers/reset", "i");
@@ -100,11 +110,23 @@ namespace MqttTest.Mqtt
 
         #region Second
 
-        public void Second_Enable()
+        public void Second_Enable(bool quiet)
         {
-            Publish("ter2070/sec/in", "1");
+            if (quiet)
+            {
+                Publish("ter2070/sec/in", "2");
+            }
+            else
+            {
+                Publish("ter2070/sec/in", "1");
+            }
         }
 
+        public void Second_Disable()
+        {
+            Publish("ter2070/sec/in", "0");
+        }
+        
         #endregion
 
         #region Smoke

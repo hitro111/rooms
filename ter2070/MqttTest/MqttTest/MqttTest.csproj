@@ -124,8 +124,8 @@
     <Compile Include="Audio\Common.cs" />
     <Compile Include="Audio\BackgroundAudio.cs" />
     <Compile Include="Audio\LoopStream.cs" />
-    <Compile Include="Audio\Space\AudioDeviceMgr.cs" />
-    <Compile Include="Audio\Space\RoomAudioManager.cs" />
+    <Compile Include="Audio\AudioDeviceMgr.cs" />
+    <Compile Include="Audio\RoomAudioManager.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="Mqtt\Commands.cs" />
     <Compile Include="Mqtt\Events.cs" />
@@ -173,6 +173,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Sounds\air_ok.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Sounds\alarm_actived.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Sounds\alarm_on.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Sounds\background.mp3">
@@ -236,6 +242,18 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Sounds\fail.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Sounds\generator_ready.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Sounds\gun_ready.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Sounds\gun_shotbg.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Sounds\lab_open.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Sounds\power_fail.wav">

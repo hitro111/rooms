@@ -3,18 +3,32 @@ using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MqttTest.Audio;
 using MqttTest.Mqtt;
 
 namespace MqttTest
 {
     public partial class QuestTest : Form
     {
+        private const int DefaultChannel = 0;
         private readonly Commands _commands = new Commands();
         private Events _events;
+        readonly BackgroundAudio _backgroundAudio = new BackgroundAudio("Resources/Sounds/background.mp3", DefaultChannel);
+        AudioDeviceMgr _deviceAudioMgr = new AudioDeviceMgr(new AudioDevice(DefaultChannel));
+        private RoomAudioManager _audioMgr;
+
+        private int secGameCount = 0;
 
         public QuestTest()
         {
             InitializeComponent();
+
+            _audioMgr = new RoomAudioManager(_deviceAudioMgr);
+            new Thread(() =>
+            {
+                Thread.CurrentThread.IsBackground = true;
+                _deviceAudioMgr.Run();
+            }).Start();
 
             Task.Run(() =>
             {
@@ -34,6 +48,8 @@ namespace MqttTest
 
         private void Init()
         {
+            secGameCount = 0;
+
             _commands.All_Init();
             _commands.All_Ping();
             consoleTb.Clear();
@@ -41,8 +57,8 @@ namespace MqttTest
             _commands.Color_Enable();
             _commands.Lazers_Init();
 
-            Thread.Sleep(500);
-            _events.InitPower();
+            //Thread.Sleep(500); 
+            //_events.InitPower();
         }
 
         private void Start()
@@ -70,12 +86,13 @@ namespace MqttTest
         public void SetSec()
         {
             secLbl.Text = DateTime.Now.ToString(CultureInfo.InvariantCulture);
+            _commands.Smoke_On();
         }
 
         private void button18_Click(object sender, EventArgs e)
         {
             secLbl.Text = "<>";
-            _commands.Second_Enable();
+            _commands.Second_Enable(false);
         }
 
         public void WriteBlinkBoxOk()
@@ -85,6 +102,7 @@ namespace MqttTest
 
         public void LazersAlert()
         {
+            _audioMgr.PlayAlarmOn();
             alarmLbl.Text = DateTime.Now.ToString(CultureInfo.InvariantCulture);
             _commands.Door2_AlarmOn();
             _commands.Color_Enable();
@@ -174,6 +192,8 @@ namespace MqttTest
         private void startBtn_Click(object sender, EventArgs e)
         {
             Init();
+            _audioMgr.GameRunning = true;
+            //_backgroundAudio.PlaySound();
         }
 
         private void door1Open_Click(object sender, EventArgs e)
@@ -192,18 +212,28 @@ namespace MqttTest
             _commands.Door1_Open();
             _commands.Lazers_Activate();
             _commands.Color_Disable();
-            _commands.Second_Enable();
+
+            _commands.Second_Enable(secGameCount > 0);
+            secGameCount++;
+
+            //_audioMgr.PlayAlarmActive();
         }
 
         public void Door2Opened()
         {
+            _commands.Second_Disable();
             _commands.Lazers_Deactivate();
             door2Lbl.Text = DateTime.Now.ToString(CultureInfo.InvariantCulture);
+            //_audioMgr?.PlayLabOpen();
         }
 
         public void Tumbler(int value)
         {
             tumblerLbl.Text = Convert.ToString(value, 2);
+            if (value == 31438)
+            {
+                //_audioMgr?.PlayGeneratorReady();
+            }
         }
 
         public void Door1(int value)
@@ -226,6 +256,16 @@ namespace MqttTest
             genPwrLbl.Text = value.ToString();
         }
 
+        public void Sound(int value)
+        {
+            soundPwrLbl.Text = value.ToString();
+        }
+
+        public void Tv(int value)
+        {
+            tvPwrLbl.Text = value.ToString();
+        }
+
         private void smokeBtn_Click(object sender, EventArgs e)
         {
             if (smokeBtn.Text == "Smoke ON")
@@ -238,6 +278,27 @@ namespace MqttTest
                 smokeBtn.Text = "Smoke ON";
                 _commands.Smoke_Off();
             }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            _commands.Lazers_OnManual();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            _commands.Lazers_OffManual();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            _backgroundAudio.Stop();
+            _audioMgr.GameRunning = false;
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            //_audioMgr.PlayAlarmOn();
         }
     }
 }

@@ -127,3 +127,9 @@ D:\technoquest\rooms\ter2070\MqttTest\MqttTest\obj\Debug\MqttTest.pdb
 D:\Work\spaceroom\repo\rooms\ter2070\MqttTest\MqttTest\obj\Debug\MqttTest.csprojAssemblyReference.cache
 D:\Work\spaceroom\repo\rooms\ter2070\MqttTest\MqttTest\obj\Debug\MqttTest.csproj.CoreCompileInputs.cache
 D:\Work\spaceroom\repo\rooms\ter2070\MqttTest\MqttTest\obj\Debug\MqttTest.csproj.CopyComplete
+D:\Work\spaceroom\repo\rooms\ter2070\MqttTest\MqttTest\bin\Debug\Resources\Sounds\alarm_actived.wav
+D:\Work\spaceroom\repo\rooms\ter2070\MqttTest\MqttTest\bin\Debug\Resources\Sounds\alarm_on.wav
+D:\Work\spaceroom\repo\rooms\ter2070\MqttTest\MqttTest\bin\Debug\Resources\Sounds\generator_ready.wav
+D:\Work\spaceroom\repo\rooms\ter2070\MqttTest\MqttTest\bin\Debug\Resources\Sounds\gun_ready.wav
+D:\Work\spaceroom\repo\rooms\ter2070\MqttTest\MqttTest\bin\Debug\Resources\Sounds\gun_shotbg.wav
+D:\Work\spaceroom\repo\rooms\ter2070\MqttTest\MqttTest\bin\Debug\Resources\Sounds\lab_open.wav

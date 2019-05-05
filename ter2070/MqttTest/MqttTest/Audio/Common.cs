@@ -4,6 +4,11 @@
     {
         Unknown,
 
+        Alarm,
+        LabDoor,
+        Generator,
+        Gun,
+
         //space
         Air,
         Box,

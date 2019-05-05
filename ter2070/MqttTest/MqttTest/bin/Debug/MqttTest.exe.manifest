@@ -90,14 +90,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="MqttTest.exe" size="61440">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="MqttTest.exe" size="64000">
       <assemblyIdentity name="MqttTest" version="1.4.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>02McvC9CfCOYRkdaw2HDF4woXyHfAsEZXo/oTP8cOGs=</dsig:DigestValue>
+        <dsig:DigestValue>KZs1RrgfWDsVNQdG2BuSvkj/t+gQLbkKIgcCeVlXDOo=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -152,13 +152,31 @@
       <dsig:DigestValue>u5nW001qNg7RYtA/K8WqnQjQzSy9irIBZ+w16GCHPb8=</dsig:DigestValue>
     </hash>
   </file>
-  <file name="Resources\Sounds\background.mp3" size="18474870">
+  <file name="Resources\Sounds\alarm_actived.wav" size="458718">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>y5toO+Vktf23PN/iBcF8ewXwxTZFyiPLtugiAF3aoc0=</dsig:DigestValue>
+      <dsig:DigestValue>nrxUzPaxfsVM5vDMxuPb6PZu9TcP0zRaf0o0nnMfzHY=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Resources\Sounds\alarm_on.wav" size="175542">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>MrJKd9MOZiVuQ1hP5G3TWrqjUds+iAWXcCwbLZrit5M=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Resources\Sounds\background.mp3" size="91200000">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>D2cYZzEk7AZh417Gn3kBOHcWo69JoSDCbjhtYZBejLQ=</dsig:DigestValue>
     </hash>
   </file>
   <file name="Resources\Sounds\box_click.wav" size="83148">
@@ -339,6 +357,42 @@
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
       <dsig:DigestValue>2fG1XT8Gix9RQjIf3mM3D9eKrXSevGNy5Uixre6PyUk=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Resources\Sounds\generator_ready.wav" size="1589838">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>XKLi3t+NhziukUjyOq6M0qEi8u3qtSXngE92ZDiSn30=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Resources\Sounds\gun_ready.wav" size="1520718">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>u5nW001qNg7RYtA/K8WqnQjQzSy9irIBZ+w16GCHPb8=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Resources\Sounds\gun_shotbg.wav" size="1265656">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>vHKWiMFSmzS64bazSiQUBSF8VPIrfjhcZ3TvuhmuQDY=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Resources\Sounds\lab_open.wav" size="617550">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>AUHI25z/iRK5HlstWAOKrcfPUE4sEkA2W2AThqs0DME=</dsig:DigestValue>
     </hash>
   </file>
   <file name="Resources\Sounds\power_fail.wav" size="1327182">

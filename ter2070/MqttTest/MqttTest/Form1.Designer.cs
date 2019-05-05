@@ -30,6 +30,12 @@
         {
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.button3 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
+            this.tvPwrLbl = new System.Windows.Forms.Label();
+            this.soundPwrLbl = new System.Windows.Forms.Label();
+            this.smokeBtn = new System.Windows.Forms.Button();
             this.genPwrLbl = new System.Windows.Forms.Label();
             this.door1PwrLbl = new System.Windows.Forms.Label();
             this.block2PwrLbl = new System.Windows.Forms.Label();
@@ -60,7 +66,7 @@
             this.consoleTb = new System.Windows.Forms.TextBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.button9 = new System.Windows.Forms.Button();
-            this.smokeBtn = new System.Windows.Forms.Button();
+            this.button4 = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage4.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -80,6 +86,12 @@
             // 
             // tabPage4
             // 
+            this.tabPage4.Controls.Add(this.button4);
+            this.tabPage4.Controls.Add(this.button3);
+            this.tabPage4.Controls.Add(this.button2);
+            this.tabPage4.Controls.Add(this.button1);
+            this.tabPage4.Controls.Add(this.tvPwrLbl);
+            this.tabPage4.Controls.Add(this.soundPwrLbl);
             this.tabPage4.Controls.Add(this.smokeBtn);
             this.tabPage4.Controls.Add(this.genPwrLbl);
             this.tabPage4.Controls.Add(this.door1PwrLbl);
@@ -114,6 +126,64 @@
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "tabPage4";
             this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(95, 281);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(75, 23);
+            this.button3.TabIndex = 38;
+            this.button3.Text = "Stop";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(615, 183);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(127, 31);
+            this.button2.TabIndex = 37;
+            this.button2.Text = "Выкл лазеры";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(615, 146);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(127, 31);
+            this.button1.TabIndex = 36;
+            this.button1.Text = "Вкл лазеры";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // tvPwrLbl
+            // 
+            this.tvPwrLbl.AutoSize = true;
+            this.tvPwrLbl.Location = new System.Drawing.Point(154, 392);
+            this.tvPwrLbl.Name = "tvPwrLbl";
+            this.tvPwrLbl.Size = new System.Drawing.Size(24, 17);
+            this.tvPwrLbl.TabIndex = 35;
+            this.tvPwrLbl.Text = "77";
+            // 
+            // soundPwrLbl
+            // 
+            this.soundPwrLbl.AutoSize = true;
+            this.soundPwrLbl.Location = new System.Drawing.Point(154, 365);
+            this.soundPwrLbl.Name = "soundPwrLbl";
+            this.soundPwrLbl.Size = new System.Drawing.Size(16, 17);
+            this.soundPwrLbl.TabIndex = 34;
+            this.soundPwrLbl.Text = "0";
+            // 
+            // smokeBtn
+            // 
+            this.smokeBtn.Location = new System.Drawing.Point(375, 284);
+            this.smokeBtn.Name = "smokeBtn";
+            this.smokeBtn.Size = new System.Drawing.Size(119, 23);
+            this.smokeBtn.TabIndex = 33;
+            this.smokeBtn.Text = "Smoke ON";
+            this.smokeBtn.UseVisualStyleBackColor = true;
+            this.smokeBtn.Click += new System.EventHandler(this.smokeBtn_Click);
             // 
             // genPwrLbl
             // 
@@ -163,7 +233,7 @@
             // door2Lbl
             // 
             this.door2Lbl.AutoSize = true;
-            this.door2Lbl.Location = new System.Drawing.Point(234, 284);
+            this.door2Lbl.Location = new System.Drawing.Point(297, 284);
             this.door2Lbl.Name = "door2Lbl";
             this.door2Lbl.Size = new System.Drawing.Size(46, 17);
             this.door2Lbl.TabIndex = 27;
@@ -171,7 +241,7 @@
             // 
             // door1Open
             // 
-            this.door1Open.Location = new System.Drawing.Point(138, 284);
+            this.door1Open.Location = new System.Drawing.Point(201, 284);
             this.door1Open.Name = "door1Open";
             this.door1Open.Size = new System.Drawing.Size(75, 23);
             this.door1Open.TabIndex = 26;
@@ -404,15 +474,15 @@
             this.button9.UseVisualStyleBackColor = true;
             this.button9.Click += new System.EventHandler(this.button9_Click);
             // 
-            // smokeBtn
+            // button4
             // 
-            this.smokeBtn.Location = new System.Drawing.Point(375, 284);
-            this.smokeBtn.Name = "smokeBtn";
-            this.smokeBtn.Size = new System.Drawing.Size(119, 23);
-            this.smokeBtn.TabIndex = 33;
-            this.smokeBtn.Text = "Smoke ON";
-            this.smokeBtn.UseVisualStyleBackColor = true;
-            this.smokeBtn.Click += new System.EventHandler(this.smokeBtn_Click);
+            this.button4.Location = new System.Drawing.Point(737, 280);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(75, 23);
+            this.button4.TabIndex = 39;
+            this.button4.Text = "button4";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
             // QuestTest
             // 
@@ -467,6 +537,12 @@
         private System.Windows.Forms.Label block1PwrLbl;
         private System.Windows.Forms.Label genPwrLbl;
         private System.Windows.Forms.Button smokeBtn;
+        private System.Windows.Forms.Label soundPwrLbl;
+        private System.Windows.Forms.Label tvPwrLbl;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button button4;
     }
 }
 

@@ -17,7 +17,7 @@ namespace MqttTest.Mqtt
 
         public Events(QuestTest mainForm) : base("localhost")
         {
-            _mainForm = mainForm;
+            _mainForm = mainForm; 
 
             #region Power changed events
 
@@ -61,10 +61,29 @@ namespace MqttTest.Mqtt
                 _mainForm.Invoke((MethodInvoker)(() => _mainForm.Generator(senderPowerTuple.Item2)));
             };
 
+            On["ter2070/e/soundPwr"] = _ =>
+            {
+                var senderPowerTuple = ((string)_.Message).DeserializePowerData();
+                Console.WriteLine($"sender: {senderPowerTuple.Item1}, value: {senderPowerTuple.Item2}");
+                if (senderPowerTuple.Item1 == Consts.ServerId)
+                    return;
+
+                _mainForm.Invoke((MethodInvoker)(() => _mainForm.Sound(senderPowerTuple.Item2)));
+            };  
+
+            On["ter2070/e/tvPwr"] = _ =>
+            {
+                var senderPowerTuple = ((string)_.Message).DeserializePowerData();
+                Console.WriteLine($"sender: {senderPowerTuple.Item1}, value: {senderPowerTuple.Item2}");
+                if (senderPowerTuple.Item1 == Consts.ServerId)
+                    return;
+
+                _mainForm.Invoke((MethodInvoker)(() => _mainForm.Tv(senderPowerTuple.Item2)));
+            };
             #endregion
 
             #region TODO:revise
-
+             
             On["#"] = _ =>
             {
                 if (!ignored.Contains(_.Topic) && !ignored.Any(x => Regex.IsMatch(_.Topic, x)))
@@ -139,11 +158,16 @@ namespace MqttTest.Mqtt
 
         public void InitPower()
         {
-            Door1Power(1670);
-            Block1Power(180);
-            Block2Power(112);
-            GeneratorPower(66);
-        }
+            Door1Power(17);
+            Block1Power(550);
+            Block2Power(820);
+            GeneratorPower(63);
+            SoundPower(21);
+            TvPower(2);
+            CpuPower(9);
+            StandPower(1);
+            TablePower(4);
+        } 
 
         public void Door1Power(int power)
         {
@@ -163,6 +187,31 @@ namespace MqttTest.Mqtt
         public void GeneratorPower(int power)
         {
             Publish("ter2070/e/genPwr", Ext.SerializePowerData(Consts.ServerId, power));
+        }
+
+        public void SoundPower(int power)
+        {
+            Publish("ter2070/e/soundPwr", Ext.SerializePowerData(Consts.ServerId, power));
+        }
+
+        public void TvPower(int power)
+        {
+            Publish("ter2070/e/tvPwr", Ext.SerializePowerData(Consts.ServerId, power));
+        }
+
+        public void CpuPower(int power)
+        {
+            Publish("ter2070/e/cpuPwr", Ext.SerializePowerData(Consts.ServerId, power));
+        }
+
+        public void StandPower(int power)
+        {
+            Publish("ter2070/e/standPwr", Ext.SerializePowerData(Consts.ServerId, power));
+        }
+
+        public void TablePower(int power)
+        {
+            Publish("ter2070/e/tablePwr", Ext.SerializePowerData(Consts.ServerId, power));
         }
     }
 

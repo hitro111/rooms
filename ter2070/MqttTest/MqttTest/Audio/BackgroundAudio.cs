@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using NAudio.Wave;
 
 namespace MqttTest.Audio
@@ -7,45 +6,39 @@ namespace MqttTest.Audio
     public class BackgroundAudio
     {
         private readonly string _fileName;
+        private readonly WaveOut _waveOut;
 
-        public BackgroundAudio(string fileName)
+        public BackgroundAudio(string fileName, int channel)
         {
             _fileName = fileName;
+            _waveOut = new WaveOut()
+            {
+                DeviceNumber = channel,
+                Volume = 0.1f
+            };
         }
 
-        private WaveOut[] _waveOuts = new WaveOut[]
-        {
-            //new WaveOut {DeviceNumber = 0},
-            new WaveOut {DeviceNumber = 1},
-            new WaveOut {DeviceNumber = 2},
-
-            new WaveOut {DeviceNumber = 3}
-        };
-
-        public void PlaySoundInDevice(int deviceNumber)
+        public void PlaySound()
         {
             try
             {
-                var w = _waveOuts[deviceNumber];
-                w.Stop();
+                _waveOut?.Stop();
 
-                if (outputDevices.ContainsKey(deviceNumber))
-                {
-                    outputDevices[deviceNumber].WaveOut.Dispose();
-                    outputDevices[deviceNumber].WaveStream.Dispose();
-                }
+                outputDevice?.WaveOut?.Dispose();
+                outputDevice?.WaveStream?.Dispose();
+                
 
                 WaveStream waveStream = IsMp3(_fileName)
-                    ? (WaveStream)new Mp3FileReader(_fileName)
+                     ? (WaveStream)new Mp3FileReader(_fileName)
                     : new WaveFileReader(_fileName);
 
                 LoopStream loop = new LoopStream(waveStream);
 
                 // hold onto the WaveOut and  WaveStream so we can dispose them later
-                outputDevices[deviceNumber] = new PlaybackSession { WaveOut = w, WaveStream = loop };
+                outputDevice = new PlaybackSession { WaveOut = _waveOut, WaveStream = loop };
 
-                w.Init(loop);
-                w.Play();
+                _waveOut.Init(loop);
+                _waveOut.Play();
             }
             catch (Exception)
             {
@@ -58,39 +51,24 @@ namespace MqttTest.Audio
             return fileName.ToLower().EndsWith(".mp3");
         }
 
-        private Dictionary<int, PlaybackSession> outputDevices = new Dictionary<int, PlaybackSession>();
+        private PlaybackSession outputDevice;
 
-        public void StopAll()
+        public void Stop()
         {
-            foreach (var playbackSession in outputDevices.Values)
-            {
-                playbackSession.WaveOut.Stop();
-            }
+            _waveOut?.Stop();
         }
 
         public void DisposeAll()
         {
-            foreach (var playbackSession in outputDevices.Values)
-            {
-                playbackSession.WaveOut.Stop();
-                playbackSession.WaveOut.Dispose();
-                playbackSession.WaveStream.Dispose();
-            }
+            outputDevice?.WaveOut?.Stop();
+            outputDevice?.WaveOut?.Dispose();
+            outputDevice?.WaveStream?.Dispose();
         }
 
         class PlaybackSession
         {
             public IWavePlayer WaveOut { get; set; }
             public WaveStream WaveStream { get; set; }
-        }
-
-        public void PlayBackground()
-        {
-            int waveOutDevices = WaveOut.DeviceCount;
-            for (int n = 0; n < waveOutDevices; n++)
-            {
-                PlaySoundInDevice(n);
-            }
         }
     }
 }

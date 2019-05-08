@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using MqttTest.Audio;
 using MqttTest.Mqtt;
+using Timer = System.Timers.Timer;
 
 namespace MqttTest
 {
@@ -16,6 +17,8 @@ namespace MqttTest
         readonly BackgroundAudio _backgroundAudio = new BackgroundAudio("Resources/Sounds/background.mp3", DefaultChannel);
         AudioDeviceMgr _deviceAudioMgr = new AudioDeviceMgr(new AudioDevice(DefaultChannel));
         private RoomAudioManager _audioMgr;
+        private Timer _timer;
+        private DateTime _startTime;
 
         private int secGameCount = 0;
 
@@ -42,28 +45,23 @@ namespace MqttTest
         {
             _events = new Events(this);
 
-            _commands.Run();
-            _events.Run();
+            //_commands.Run();
+            //_events.Run();
         }
 
         private void Init()
         {
             secGameCount = 0;
 
-            _commands.All_Init();
-            _commands.All_Ping();
+            //_commands.All_Init();
+            //_commands.All_Ping();
             consoleTb.Clear();
 
-            _commands.Color_Enable();
-            _commands.Lazers_Init();
+            //_commands.Color_Enable();
+            //_commands.Lazers_Init();
 
             //Thread.Sleep(500); 
             //_events.InitPower();
-        }
-
-        private void Start()
-        {
-            
         }
 
         private void QuestTest_FormClosing(object sender, FormClosingEventArgs e)
@@ -86,6 +84,7 @@ namespace MqttTest
         public void SetSec()
         {
             secLbl.Text = DateTime.Now.ToString(CultureInfo.InvariantCulture);
+            _audioMgr?.PlaySmokeOn();
             _commands.Smoke_On();
         }
 
@@ -102,7 +101,7 @@ namespace MqttTest
 
         public void LazersAlert()
         {
-            _audioMgr.PlayAlarmOn();
+            _audioMgr?.PlayAlarmOn();
             alarmLbl.Text = DateTime.Now.ToString(CultureInfo.InvariantCulture);
             _commands.Door2_AlarmOn();
             _commands.Color_Enable();
@@ -193,7 +192,34 @@ namespace MqttTest
         {
             Init();
             _audioMgr.GameRunning = true;
-            //_backgroundAudio.PlaySound();
+            _backgroundAudio.ChangeTrack("Resources/Sounds/background.mp3");
+
+            try
+            {
+                if (_timer != null)
+                {
+                    _timer.Stop();
+                    _timer.Dispose();
+                }
+            }
+            catch
+            {
+                //
+            }
+
+            _startTime = DateTime.Now;
+            _timer = new Timer();
+            _timer.Interval = 60000;
+
+            _timer.Elapsed += OnTimedEvent;
+            _timer.AutoReset = true;
+            _timer.Enabled = true;
+
+        }
+
+        private static void OnTimedEvent(Object source, System.Timers.ElapsedEventArgs e)
+        {
+            //todo timer sounds
         }
 
         private void door1Open_Click(object sender, EventArgs e)
@@ -216,7 +242,8 @@ namespace MqttTest
             _commands.Second_Enable(secGameCount > 0);
             secGameCount++;
 
-            //_audioMgr.PlayAlarmActive();
+            _audioMgr?.PlayAlarmActive();
+            _backgroundAudio.ChangeTrack("Resources/Sounds/mission_impossible.mp3");
         }
 
         public void Door2Opened()
@@ -224,7 +251,8 @@ namespace MqttTest
             _commands.Second_Disable();
             _commands.Lazers_Deactivate();
             door2Lbl.Text = DateTime.Now.ToString(CultureInfo.InvariantCulture);
-            //_audioMgr?.PlayLabOpen();
+            _audioMgr?.PlayLabOpen();
+            _backgroundAudio.ChangeTrack("Resources/Sounds/background.mp3");
         }
 
         public void Tumbler(int value)
@@ -232,7 +260,7 @@ namespace MqttTest
             tumblerLbl.Text = Convert.ToString(value, 2);
             if (value == 31438)
             {
-                //_audioMgr?.PlayGeneratorReady();
+                _audioMgr?.PlayGeneratorReady();
             }
         }
 
@@ -298,7 +326,7 @@ namespace MqttTest
 
         private void button4_Click(object sender, EventArgs e)
         {
-            //_audioMgr.PlayAlarmOn();
+            _backgroundAudio.ChangeTrack("Resources/Sounds/mission_impossible.mp3");
         }
     }
 }

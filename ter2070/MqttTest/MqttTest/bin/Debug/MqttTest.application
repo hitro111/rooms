@@ -7,14 +7,14 @@
     <framework targetVersion="4.6.1" profile="Full" supportedRuntime="4.0.30319" />
   </compatibleFrameworks>
   <dependency>
-    <dependentAssembly dependencyType="install" codebase="MqttTest.exe.manifest" size="22576">
+    <dependentAssembly dependencyType="install" codebase="MqttTest.exe.manifest" size="9785">
       <assemblyIdentity name="MqttTest.exe" version="1.0.0.13" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="msil" type="win32" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>kp39rR0DjVwX56LB5Lu18efJy+jcBJnw7IJOiMOvTVw=</dsig:DigestValue>
+        <dsig:DigestValue>Q7Gvx2wfiu+0AZg5rTeWH1Pqa13EcTbxJMxEAi2MMAY=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

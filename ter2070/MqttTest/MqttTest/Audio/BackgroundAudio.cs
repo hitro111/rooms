@@ -5,7 +5,7 @@ namespace MqttTest.Audio
 {
     public class BackgroundAudio
     {
-        private readonly string _fileName;
+        private string _fileName;
         private readonly WaveOut _waveOut;
 
         public BackgroundAudio(string fileName, int channel)
@@ -13,9 +13,14 @@ namespace MqttTest.Audio
             _fileName = fileName;
             _waveOut = new WaveOut()
             {
-                DeviceNumber = channel,
-                Volume = 0.1f
+                DeviceNumber = channel
             };
+        }
+
+        public void ChangeTrack(string fileName)
+        {
+            _fileName = fileName;
+            PlaySound();
         }
 
         public void PlaySound()

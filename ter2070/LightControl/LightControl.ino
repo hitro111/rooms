@@ -17,8 +17,18 @@ byte ip[] = { 192, 168, 0, 67 }; // <- change to match your network
 EthernetClient net;
 MQTTClient client;
 
+#define GEN_INIT_VAL 6
+
+int lightVals[100] = {0, 1, 2, 3, 5, 5, 7, 8, 8, 11, 12, 12, 15, 15, 16, 18, 18, 18, 21, 23, 23, 23, 26, 29, 29, 31, 32, 34, 34, 37, 42, 42, 42, 42, 45, 45, 48, 50, 50, 50, 50, 53, 56, 58, 61, 61, 61, 69, 69, 69, 69, 77, 77, 80, 80, 85, 85, 88, 88, 88, 96, 96, 104, 104, 106, 111, 111, 116, 116, 123, 123, 128, 128, 135, 140, 140, 145, 145, 152, 157, 157, 162, 169, 169, 174, 183, 186, 186, 193, 198, 203, 208, 215, 215, 227, 227, 236, 239, 248, 255};
+
+bool genOn = false;
+bool shotOk = false;
+int lightVal = 0;
 void __init()
 {
+  genOn = false;
+  shotOk = false;
+  lightVal = lightVals[GEN_INIT_VAL];
 }
 
 void setup() {
@@ -53,11 +63,48 @@ void loop() {
     connect();
   }
 #endif
+
+  if (!shotOk)
+  {
+    if (genOn)
+    {
+      analogWrite  (LED_lightening, lightVal);
+      analogWrite  (LED_lightening2, lightVal);
+    }
+    else
+    {
+      analogWrite  (LED_lightening, 0);
+      analogWrite  (LED_lightening2, 0);
+    }
+  }
 }
 
 void messageReceived(String topic, String payload, char * bytes, unsigned int length) {
   if (topic.startsWith("ter"))
   {
+
+    if (topic.equals("ter2070/e/genOn"))
+    {
+      if (payload == "0")
+      {
+        genOn = false;
+      }
+      else if (payload == "1")
+      {
+        genOn = true;
+      }
+    }
+
+    if (topic.equals("ter2070/e/genPwr"))
+    {
+      if (!shotOk)
+      {
+        payload.remove(0, 1);
+        int genVal = payload.toInt();
+        genVal = genVal >= 100 ? 99 : genVal;
+        lightVal = lightVals[genVal];
+      }
+    }
 
     if (topic.equals("ter2070/e/gunshot"))
     {
@@ -75,6 +122,7 @@ void messageReceived(String topic, String payload, char * bytes, unsigned int le
       }
       else if (payload == "3")
       {
+        shotOk = true;
         shotStarted();
       }
     }
@@ -108,6 +156,8 @@ void connect() {
   client.subscribe("ter2070/reset");
   client.subscribe("ter2070/ping/in");
   client.subscribe("ter2070/e/gunshot");
+  client.subscribe("ter2070/e/genOn");
+  client.subscribe("ter2070/e/genPwr");
   // client.unsubscribe("/example");
 }
 
@@ -258,33 +308,38 @@ void gun_charging() {
 }
 
 void gun_fire() {
-  analogWrite  (LED_lightening, 60);
-  analogWrite  (LED_lightening2, 60);
-  delay (100);
-  for (int i = 10; i < 50; i++)
-  {
+  analogWrite  (LED_lightening, 0);
+  analogWrite  (LED_lightening2, 0);
+
+  /*
+    analogWrite  (LED_lightening, 60);
+    analogWrite  (LED_lightening2, 60);
+    delay (100);
+    for (int i = 10; i < 50; i++)
+    {
     analogWrite  (LED_lightening, 55 - i);
     analogWrite  (LED_lightening2, 55 - i);
     delay(30);
-  }
-  for (int i = 50; i < 255; i++)
-  {
+    }
+    for (int i = 50; i < 255; i++)
+    {
     analogWrite  (Load, i);
     delay(4);
-  }
-  delay(100);
-  front_fire();
-  front_fire();
-  front_fire();
-  front_fire();
-  front_fire();
-  front_fire();
-  front_fire();
-  for (int i = 255; i >= 0; i--)
-  {
+    }
+    delay(100);
+    front_fire();
+    front_fire();
+    front_fire();
+    front_fire();
+    front_fire();
+    front_fire();
+    front_fire();
+    for (int i = 255; i >= 0; i--)
+    {
     analogWrite  (Load, i);
     delay(3);
-  }
-  
-  // ПОИГРАТьСЯ И ДОБАВИТЬ ВОСТАНОВЛЕНИЕ ПОДСВЕТКИ
+    }
+
+    // ПОИГРАТьСЯ И ДОБАВИТЬ ВОСТАНОВЛЕНИЕ ПОДСВЕТКИ
+  */
 }

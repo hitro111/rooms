@@ -1,5 +1,5 @@
 //#define NO_SERVER
-#define TRACE
+//#define TRACE
 #include <SoftwareSerial.h>
 #include <PCF8574.h>
 
@@ -61,6 +61,12 @@ void lightOff()
   analogWrite(LED_R, LOW);
 }
 
+void alarmLight(bool on)
+{
+  analogWrite(LED_W, LOW);
+  digitalWrite(LED_R, on);
+}
+
 unsigned long long alarmTriggered = 0;
 bool alarmLightOn = false;
 unsigned long long alarmLightOnChanged = 0;
@@ -71,7 +77,6 @@ void handleLight()
 {
   if (millis() > ALARM_DURATION * 2 /*not just started*/ && millis() < alarmTriggered + ALARM_DURATION)
   {
-    lightOff();
     if (alarmLightOn && millis() - alarmLightOnChanged > TIME_ON)
     {
       alarmLightOn = false;
@@ -83,7 +88,7 @@ void handleLight()
       alarmLightOnChanged = millis();
     }
 
-    digitalWrite(LED_R, alarmLightOn);
+    alarmLight(alarmLightOn);
   }
   else
   {

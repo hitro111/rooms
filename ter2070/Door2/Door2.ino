@@ -59,6 +59,7 @@ EthernetClient net;
 MQTTClient client;
 
 bool smokeOn = false;
+bool isOpen = false;
 unsigned long long smokeOnTime = 0;
 #define SMOKE_TIME 20000
 
@@ -78,6 +79,8 @@ void __init()
 {
   state = Waiting;
   isAlarm = false;
+  isOpen = false;
+  smokeOn = false;
 
   lcd.clear();
   lcd.setCursor(0, 0);                 // Устанавливаем курсор в начало 1 строки
@@ -147,6 +150,9 @@ void loop() {
 
   handleSmoke();
 
+  if (isOpen)
+    return;
+
   switch (state)
   {
     case Waiting:
@@ -180,6 +186,7 @@ void loop() {
       state = Open;
       break;
     case Open:
+      isOpen = true;
       break;
     case Alarm:
       isAlarm = true;
@@ -223,6 +230,7 @@ void messageReceived(String topic, String payload, char * bytes, unsigned int le
       else if (payload == "o") //open manually
       {
         isAlarm = false;
+        isOpen = true;
         state = Opening;
       }
     }

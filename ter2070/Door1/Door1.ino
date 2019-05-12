@@ -33,7 +33,7 @@ u8 buf[32], sta;
 //JsonObject root = jsonBuffer.to<JsonObject>();
 
 #define BLOCKS 2
-#define BLOCK1_VAL 550
+#define BLOCK1_VAL 650
 #define BLOCK2_VAL 820
 #define DOOR1_VAL 17
 #define PWR_NEEDED 200
@@ -247,7 +247,7 @@ void sound(bool on)
 
 unsigned long long startBattery = 0;
 unsigned long long lastUpdate = 0;
-bool powerLeft;
+bool transferActive;
 int found = -1;
 bool toCard = false;
 bool fuseOff;
@@ -336,13 +336,13 @@ void loop() {
             setBattery(found);
           }
 
-          powerLeft = toCard ? power : values[found];
+          transferActive = toCard ? power > 0 && values[found] < CARD_LIMIT : values[found];
           light(false);
-          if (powerLeft)
+          if (transferActive)
             sound(true);
           delay(5);
           sound(false);
-          if (powerLeft)
+          if (transferActive)
             light(true);
         }
       }

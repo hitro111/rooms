@@ -1,4 +1,4 @@
-#define TRACE
+//#define TRACE
 #define PCF
 //#define NO_SERVER
 #define resetPin 7
@@ -29,9 +29,9 @@ PCF8574 pcf2;
 #endif
 
 #define BLOCKS 2
-#define BLOCK1_VAL 550
+#define BLOCK1_VAL 650
 #define BLOCK2_VAL 820
-#define GEN_VAL 63
+#define GEN_VAL 6
 #define POWER_LIMIT 999
 #define CARD_LIMIT 999
 
@@ -121,6 +121,7 @@ void pcfWrite(int i, bool val)
 #endif
 
 void setup() {
+  randomSeed(analogRead(0));
   nfc.begin();
   pinMode(resetPin, OUTPUT);
   digitalWrite(resetPin, LOW);
@@ -199,6 +200,19 @@ bool incPowerFract()
   return false;
 }
 
+
+bool decPowerFract()
+{
+  powerFract--;
+  if (powerFract < 0)
+  {
+    powerFract = 9;
+    return true;
+  }
+
+  return false;
+}
+
 volatile int hallTicks = 0;
 #define TICKS_NEEDED 2
 void generate()
@@ -223,6 +237,11 @@ bool setPower(int val)
   {
     power = val;
     return true;
+  }
+
+  if (val < 0)
+  {
+    val = 0;
   }
 
   return false;
@@ -303,7 +322,7 @@ bool transferPower(int card, bool toCard, int amount)
   {
     amount = power - amount >= 0 ? amount : power;
 
-    if (values[card] + amount < CARD_LIMIT)
+    if (values[card] + amount <= CARD_LIMIT)
     {
       values[card] += amount;
       power -= amount;
@@ -349,10 +368,12 @@ void sound(bool on)
   on ? digitalWrite(SOUND_PIN, HIGH) : digitalWrite(SOUND_PIN, LOW); //inverted
 }
 
+unsigned long lastDecrease = 0;
+#define decreaseCd 2000
 unsigned long lastMillis = 0;
 unsigned long long startBattery = 0;
 unsigned long long lastUpdate = 0;
-bool powerLeft;
+bool transferActive;
 int found = -1;
 bool toCard = false;
 int hallPrevVal = HIGH;
@@ -375,6 +396,19 @@ void loop() {
     return;
   }
 #endif
+
+  if (millis() - lastDecrease > decreaseCd)
+  {
+    if (power > 0 || powerFract > 0)
+    {
+      if (decPowerFract())
+      {
+        setPower(power - 1);
+      }
+    }
+
+    lastDecrease = millis();
+  }
 
   setPowerDisplay();
   sta = nfc.InListPassiveTarget(buf);
@@ -429,13 +463,13 @@ void loop() {
           setBattery(found);
         }
 
-        powerLeft = toCard ? power : values[found];
+        transferActive = toCard ? power > 0 && values[found] < CARD_LIMIT : values[found];
         light(false);
-        if (powerLeft)
+        if (transferActive)
           sound(true);
         delay(5);
         sound(false);
-        if (powerLeft)
+        if (transferActive)
           light(true);
       }
     }
@@ -485,6 +519,30 @@ void messageReceived(String topic, String payload, char * bytes, unsigned int le
       power = payload.toInt();
     }
 
+    if (topic.equals("ter2070/tlazers/alert/server"))
+    {
+      //reshuffle gen vals on alert
+      for (int i = 0; i < 16; ++i)
+      {
+        bool prevVal = inverseVal[i];
+        inverseVal[i] = random(0, 2);
+
+        if (prevVal != inverseVal[i])
+        {          
+          tumblersDone = false;
+          state[mappedPos[i]] = !state[mappedPos[i]];
+#ifdef PCF
+          pcfWrite(mappedPos[i], state[mappedPos[i]]);
+#endif
+        }
+
+        if (!tumblersDone)
+        {
+          client.publish("ter2070/e/genOn", "0");
+        }
+      }
+    }
+
     if (payload == "r")
     {
       hard_Reboot();
@@ -514,18 +572,19 @@ void messageReceived(String topic, String payload, char * bytes, unsigned int le
         pcfWrite(mappedPos[i], val);
 #endif
         state[mappedPos[i]] = val;
-
-        Serial.print(state[i]);
-        Serial.print(", ");
       }
-      Serial.println();
 
       tumblersDone = allOk();
       if (tumblersDone)
       {
+        client.publish("ter2070/e/genOn", "1");
 #ifdef TRACE
         Serial.println(F("ALL OK"));
 #endif
+      }
+      else
+      {
+        client.publish("ter2070/e/genOn", "0");
       }
     }
   }
@@ -545,6 +604,7 @@ void connect() {
   client.subscribe("ter2070/e/block1Pwr");
   client.subscribe("ter2070/e/block2Pwr");
   client.subscribe("ter2070/e/genPwr");
+  client.subscribe("ter2070/tlazers/alert/server");
 
   client.subscribe("ter2070/ping/in");
   client.subscribe("ter2070/tgen/reset");

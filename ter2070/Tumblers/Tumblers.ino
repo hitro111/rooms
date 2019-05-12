@@ -1,6 +1,6 @@
 //TODO types
 
-#define TRACE
+//#define TRACE
 //#define NO_SERVER
 #define resetPin 7
 

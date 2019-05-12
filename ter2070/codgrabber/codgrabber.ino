@@ -70,9 +70,16 @@ void checkInterrupt()
   }
 }
 
+#define MAX_CODE_SIZE 6
+int CODE_SIZE = 6;
+unsigned long long grab_time = 12000;
+int code[MAX_CODE_SIZE] = {6, 3, 7, 8, 2, 2};
+int seq[MAX_CODE_SIZE];
+
 void loop()
 {
-  if (analogRead(ConnectPin) < 400 && !processingStarted)
+  int val = analogRead(ConnectPin);
+  if (val < 600 && !processingStarted)
   {
     processingStarted = true;
     interrupted = false;
@@ -95,6 +102,28 @@ void loop()
       return;
     }
     delay (500);
+
+    if (val < 400) //325
+    {
+      CODE_SIZE = 6;
+      grab_time = 12000;
+      code[0] = 6;
+      code[1] = 3;
+      code[2] = 7;
+      code[3] = 8;
+      code[4] = 2;
+      code[5] = 2;
+    }
+    else //510
+    {
+      CODE_SIZE = 4;
+      grab_time = 8000;
+      code[0] = 2;
+      code[1] = 7;
+      code[2] = 8;
+      code[3] = 4;
+    }
+
     selection1();
 
     checkInterrupt();
@@ -539,15 +568,6 @@ void connection()  // Подключен
     delay(200);
   }
 }
-
-
-
-
-
-#define CODE_SIZE 6
-unsigned long long grab_time = 12000;
-int code[CODE_SIZE] = {6, 3, 7, 8, 2, 2};
-int seq[CODE_SIZE];
 
 void selection1()  // Подбор Кода
 {

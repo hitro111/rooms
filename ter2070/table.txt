@@ -8,14 +8,14 @@ Door2			56		06		tdoor2
 Door1			57		07		tdoor1			1 (+17 -200)
 Tumblers		58		08		ttumblr
 DistancesRobot	59		09		tdistance
-Generator		61		11		tgen			2 (+63)
+Generator		61		11		tgen			2 (+6)
 Server											0
 Smoke			60		10		tsmoke
-Sounds			62		12		tsound			3 (+21 +800)
-TV				63		13		ttv				4 (+2 -100)
+Sounds			62		12		tsound			3 (+21 +1200)
+TV				63		13		ttv				4 (+17 -100)
 CPU				64		14		tcpu			5 (+9 -2000 -10(shot))
-Stand			65		15		tstand			6 (+1 -10(arm) / -20(gun))
-Table			66		16		ttable			7 (+4 -30(light) / -5(music))
+Stand			65		15		tstand			6 (+7 -10(arm) / -20(gun))
+Table			66		16		ttable			7 (+11 -30(light) / -5(music))
 LightControl	67		17		tlight
-Block1											(+550)
+Block1											(+650)
 Block2											(+820)

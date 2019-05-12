@@ -30,8 +30,8 @@ LedControl lc = LedControl(9, 8, 4, 1);
 
 int soundsMp3 = 13;
 int pwrTransferSound = 14;
-int timerSoundMp3 = 3; //TODO
-int timerFinishedMp3 = 4; //TODO
+int timerSoundMp3 = 3;
+int timerFinishedMp3 = 4;
 bool isTimer = false;
 bool lightOn = false;
 unsigned long long lightTime = 0;
@@ -50,9 +50,9 @@ u8 buf[32], sta;
 #define DEV_ID '7'
 
 #define BLOCKS 2
-#define BLOCK1_VAL 550
+#define BLOCK1_VAL 650
 #define BLOCK2_VAL 820
-#define TABLE_VAL 4
+#define TABLE_VAL 11
 #define TABLE_LIGHT_PWR_NEEDED 10
 #define SOUND_PWR_NEEDED 5
 #define CARD_LIMIT 999
@@ -257,7 +257,7 @@ bool transferPower(int card, bool toCard, int amount)
   {
     amount = power - amount >= 0 ? amount : power;
 
-    if (values[card] + amount < CARD_LIMIT)
+    if (values[card] + amount <= CARD_LIMIT)
     {
       values[card] += amount;
       power -= amount;
@@ -355,7 +355,7 @@ void timerSoundFinished()
 
 unsigned long long startBattery = 0;
 unsigned long long lastUpdate = 0;
-bool powerLeft;
+bool transferActive;
 int found = -1;
 bool toCard = false;
 bool sndCable = false;
@@ -431,6 +431,7 @@ void loop() {
       {
         power -= 1;
         setPower();
+        delay(10);
       }
       sound(false);
 
@@ -454,6 +455,7 @@ void loop() {
     {
       power -= 1;
       setPower();
+      delay(10);
     }
     sound(false);
 
@@ -545,13 +547,13 @@ void loop() {
           setBattery(found);
         }
 
-        powerLeft = toCard ? power : values[found];
+        transferActive = toCard ? power > 0 && values[found] < CARD_LIMIT : values[found];
         light(false);
         delay(5);
-        if (powerLeft)
+        if (transferActive)
           light(true);
 
-        powerLeft ? sound(true) : sound(false);
+        transferActive ? sound(true) : sound(false);
       }
     }
   }

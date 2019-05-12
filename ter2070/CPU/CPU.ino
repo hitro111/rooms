@@ -47,7 +47,7 @@ EthernetClient net;
 MQTTClient client;
 
 #define BLOCKS 2
-#define BLOCK1_VAL 550
+#define BLOCK1_VAL 650
 #define BLOCK2_VAL 820
 #define CPU_VAL 9
 #define CPU_NEEDED_VAL 2000
@@ -73,6 +73,9 @@ byte decs[BLOCKS][4] = {
 bool shotReady = false;
 bool finished = false;
 int pwrTransferSound = 14;
+int timerSoundMp3 = 3;
+int timerFinishedMp3 = 4;
+bool isTimer = false;
 
 void updateCard(int id)
 {
@@ -195,6 +198,7 @@ void setup() {
 
 bool isBatteryDirty = false;
 bool isDisplayDirty = false;
+bool isTimerDirty = false;
 
 void setPower()
 {
@@ -231,7 +235,7 @@ void setBattery(int card)
     int n10 = p % 10;
     p /= 10;
     int n100 = p % 10;
-    
+
     lc.setRow(0, 4, B00000000);
     lc.setDigit(0, 5, n100, false);
     lc.setDigit(0, 6, n10, false);
@@ -254,10 +258,10 @@ void clearBattery()
 
 void clearDisplay()
 {
-  if (isBatteryDirty || isDisplayDirty)
+  if (isBatteryDirty || isDisplayDirty || isTimerDirty)
   {
     lc.clearDisplay(0);
-    isBatteryDirty = isDisplayDirty = false;
+    isBatteryDirty = isDisplayDirty = isTimerDirty = false;
     bPrevVal = prevVal = -1;
   }
 }
@@ -268,7 +272,7 @@ bool transferPower(int card, bool toCard, int amount)
   {
     amount = power - amount >= 0 ? amount : power;
 
-    if (values[card] + amount < CARD_LIMIT)
+    if (values[card] + amount <= CARD_LIMIT)
     {
       values[card] += amount;
       power -= amount;
@@ -389,6 +393,9 @@ void gun_fire_fucked_up() {
   digitalWrite(LightGun_neon, HIGH);
   analogWrite (LightGun_led_strips, 10);
   delay(100);
+
+  digitalWrite(LightGun_neon, LOW);
+  analogWrite (LightGun_led_strips, 0);
 }
 
 void gun_charging() {
@@ -447,7 +454,13 @@ void gun_fire() {
   for (int i = 50; i < 255; i++)
   {
     analogWrite  (LightGun_led_strips, i);
-    delay(4);
+    delay(2);
+  }
+
+  for (int i = 254; i >= 50; i--)
+  {
+    analogWrite  (LightGun_led_strips, i);
+    delay(2);
   }
   delay(100);
 #ifdef TRACE
@@ -466,10 +479,10 @@ void gun_fire() {
   digitalWrite(LightGun_front_led, LOW);
   digitalWrite(LightGun_neon, LOW);
 
-  for (int i = 255; i >= 0; i--)
+  for (int i = 50; i >= 0; i--)
   {
     analogWrite  (LightGun_led_strips, i);
-    delay(3);
+    delay(15);
   }
 }
 
@@ -590,10 +603,54 @@ void front_fire() {
   delay (20);
 }
 
+long CD = 240000; //4min
+unsigned long long cd = 0;
+void startCd()
+{
+  clearDisplay();
+  cd = millis() + CD;
+}
+
+void timerSound(bool on)
+{
+  if (on)
+  {
+
+#ifdef TRACE
+    Serial.println("MP3 TIMER ON");
+#endif
+    mp3_play (timerSoundMp3);
+    delay (50);
+    mp3_single_loop (true);
+    delay (50);
+    mp3_single_loop (true);
+  }
+  else if (!on)
+  {
+
+#ifdef TRACE
+    Serial.println("OFF TIMER MP3");
+#endif
+    mp3_stop();
+    delay(50);
+    mp3_stop();
+  }
+}
+
+void timerSoundFinished()
+{
+
+#ifdef TRACE
+  Serial.println("TIMER MP3 FINISH");
+#endif
+  mp3_play (timerFinishedMp3);
+  delay (10);
+}
+
 unsigned long lastMillis = 0;
 unsigned long long startBattery = 0;
 unsigned long long lastUpdate = 0;
-bool powerLeft;
+bool transferActive;
 int found = -1;
 bool toCard = false;
 void loop() {
@@ -609,32 +666,77 @@ void loop() {
 
   if (finished)
     return;
-    
+
+  if (cd > millis())
+  {
+    if (!isTimer)
+    {
+      timerSound(true);
+      isTimer = true;
+    }
+
+    if (!isTimerDirty)
+    {
+      lc.setChar(0, 5, '-', false);
+      lc.setChar(0, 6, '-', false);
+      lc.setChar(0, 7, '-', false);
+    }
+
+    isTimerDirty = true;
+
+    long ms = cd - millis();
+    int sec = ms / 1000;
+    int mins = sec / 60;
+    sec = sec % 60;
+
+    lc.setDigit(0, 0, 0, false);
+    lc.setDigit(0, 1, mins, true);
+
+    lc.setDigit(0, 2, (sec / 10) % 10, false);
+    lc.setDigit(0, 3, sec % 10, false);
+
+    if (ms < 100)
+    {
+      isTimer = false;
+      timerSound(false);
+      timerSoundFinished();
+      cd = 0;
+      clearDisplay();
+    }
+
+    return;
+  }
+
   if (analogRead(PWR_CABLE) < 500 && power >= CPU_NEEDED_VAL)
   {
     sound(true);
     light(false);
+    int nneonCt = 0;
     bool neonOn = false;
     for (int i = 0; i < CPU_NEEDED_VAL; ++i)
     {
       power -= 1;
       setPower();
-      delay(10);
-      neonOn = !neonOn;
+      delay(5);
+      nneonCt++;
+      if (nneonCt % 9 == 0)
+      {
+        neonOn = !neonOn;
+      }
       digitalWrite(NEON_LIGHT_PIN, neonOn);
     }
-    digitalWrite(NEON_LIGHT_PIN, LOW);
+    digitalWrite(NEON_LIGHT_PIN, HIGH);
     sound(false);
-    
+
     client.publish("ter2070/e/cpuFullPwr", "1");
-    
+
     lc.clearDisplay(0);
-    
-    for (int i=0; i < 8; ++i)
+
+    for (int i = 0; i < 8; ++i)
     {
       lc.setChar(0, i, '-', false);
     }
-    
+
     shotReady = true;
     digitalWrite(NEON_LIGHT_PIN, HIGH);
   }
@@ -644,6 +746,10 @@ void loop() {
 #ifdef TRACE
     Serial.println("READY");
 #endif
+
+    digitalWrite(CARD1_LED, isCard1(analogRead(CARD1_IN)));
+    digitalWrite(CARD2_LED, isCard2(analogRead(CARD2_IN)));
+
     shotReady = false;
     gun_charging();
 
@@ -665,11 +771,9 @@ void loop() {
       }
       sound(false);
       digitalWrite(NEON_LIGHT_PIN, LOW);
+      startCd();
     }
   }
-
-  digitalWrite(CARD1_LED, isCard1(analogRead(CARD1_IN)));
-  digitalWrite(CARD2_LED, isCard2(analogRead(CARD2_IN)));
 
   if (!shotReady)
   {
@@ -713,15 +817,15 @@ void loop() {
             setBattery(found);
           }
 
-          powerLeft = toCard ? power : values[found];
+          transferActive = toCard ? power > 0 && values[found] < CARD_LIMIT : values[found];
 
 
           light(false);
           delay(5);
-          if (powerLeft)
+          if (transferActive)
             light(true);
 
-          powerLeft ? sound(true) : sound(false);
+          transferActive ? sound(true) : sound(false);
         }
       }
     }
@@ -772,6 +876,33 @@ void messageReceived(String topic, String payload, char * bytes, unsigned int le
       power = payload.toInt();
     }
 
+    if (topic.equals("ter2070/e/time"))
+    {
+      int minute = payload.toInt();
+
+      if (minute < 30)
+      {
+        CD = 300000L; //5 min
+      }
+      else if (minute < 40)
+      {
+        CD = 180000L; //3 min
+      }
+      else if (minute < 50)
+      {
+        CD = 60000L; //1 min
+      }
+      else if (minute < 55)
+      {
+        CD = 10000L; //10 sec
+      }
+      else if (minute < 58)
+      {
+        CD = 3000L; //3 sec
+      }
+
+    }
+
     if (payload == "r")
     {
       hard_Reboot();
@@ -805,6 +936,7 @@ void connect() {
   client.subscribe("ter2070/reset");
   client.subscribe("ter2070/ping/in");
   client.subscribe("ter2070/tcpu/reset");
+  client.subscribe("ter2070/e/time");
   // client.unsubscribe("/example");
 }
 

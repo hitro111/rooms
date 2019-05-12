@@ -1,4 +1,4 @@
-#define TRACE
+//#define TRACE
 //#define NO_SERVER
 #define resetPin 7
 //#define DIAGNOSTICS
@@ -51,9 +51,9 @@ NFC_Module nfc;
 u8 buf[32], sta;
 
 #define BLOCKS 2
-#define BLOCK1_VAL 550
+#define BLOCK1_VAL 650
 #define BLOCK2_VAL 820
-#define TV_VAL 2
+#define TV_VAL 17
 #define TV_POWER_NEEDED 100
 #define CARD_LIMIT 999
 
@@ -269,7 +269,7 @@ bool transferPower(int card, bool toCard, int amount)
   {
     amount = power - amount >= 0 ? amount : power;
 
-    if (values[card] + amount < CARD_LIMIT)
+    if (values[card] + amount <= CARD_LIMIT)
     {
       values[card] += amount;
       power -= amount;
@@ -438,7 +438,7 @@ void handleDiagnostics()
 unsigned long lastMillis = 0;
 unsigned long long startBattery = 0;
 unsigned long long lastUpdate = 0;
-bool powerLeft;
+bool transferActive;
 int found = -1;
 bool toCard = false;
 void loop() {
@@ -557,13 +557,13 @@ void loop() {
           setBattery(found);
         }
 
-        powerLeft = toCard ? power : values[found];
+        transferActive = toCard ? power > 0 && values[found] < CARD_LIMIT : values[found];
         light(false);
-        if (powerLeft)
+        if (transferActive)
           sound(true);
         delay(5);
         sound(false);
-        if (powerLeft)
+        if (transferActive)
           light(true);
       }
     }
@@ -621,6 +621,24 @@ void messageReceived(String topic, String payload, char * bytes, unsigned int le
 
     if (topic.equals("ter2070/e/robotDead"))
     {
+      delay(1000);
+      client.loop();
+      
+      delay(1000);
+      client.loop();
+      
+      delay(1000);
+      client.loop();
+      
+      delay(1000);
+      client.loop();
+      
+      delay(1000);
+      client.loop();
+      
+      delay(1000);
+      client.loop();
+      
       CMD_SUCCESS();
     }
 

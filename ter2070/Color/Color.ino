@@ -24,9 +24,11 @@
 
 
 #define LED_COUNT 4
-
-#define neededAmount 4
+#define INIT_NEEDED 5
+#define MIN_NEEDED 3
 #define startAmount 2
+
+int neededAmount = INIT_NEEDED;
 
 #include <DFPlayer_Mini_Mp3.h>
 SoftwareSerial mySerial(20, 19);
@@ -166,6 +168,7 @@ BtnState NeededWasClicked(int x)
 
 void __init()
 {
+  neededAmount = INIT_NEEDED;
   currentAmount = startAmount;
   SetState(Null);
   SetState(NotStarted);
@@ -334,11 +337,11 @@ enum DisplayingColorsState
 };
 
 DisplayingColorsState displayState;
-byte neededColors[neededAmount];
+byte neededColors[INIT_NEEDED];
 byte currentStep;
-int preColorDelay = 1000;
-int onDelay = 1000;
-int offDelay = 600;
+int preColorDelay = 800;//1000;
+int onDelay = 800;//1000;
+int offDelay = 300;//600;
 unsigned long long lastDisplayUpdate;
 byte curLed;
 void ProcessDisplayingColors()
@@ -445,8 +448,7 @@ enum ProcessSuccessState
 ProcessSuccessState successState;
 unsigned long long successUpdate = 0;
 int preDelay = 200;
-int postDelay = 3000;
-
+int postDelay = 2000;//3000;
 void ProcessSuccess()
 {
 #ifdef TRACE
@@ -474,9 +476,6 @@ void ProcessSuccess()
       if (currentAmount == neededAmount)
       {
         mp3_play(win_sound);
-#ifndef NO_SERVER
-        client.publish("ter2070/tcolor/server", "1");
-#endif
       }
       else
       {
@@ -491,8 +490,18 @@ void ProcessSuccess()
       {
         if (currentAmount == neededAmount)
         {
-          SetState(Finished);
+          //SetState(Finished);
+          //gameEnabled = false;
+          SetState(Null);
+          SetState(NotStarted);
           gameEnabled = false;
+  
+          neededAmount = neededAmount > MIN_NEEDED ? neededAmount - 1 : MIN_NEEDED;
+          currentAmount = startAmount;
+          
+#ifndef NO_SERVER
+          client.publish("ter2070/tcolor/server", "1");
+#endif
           //Success!
         }
         else
@@ -508,9 +517,10 @@ void ProcessSuccess()
 
 void ProcessFinished()
 {
-  __init();
-  gameEnabled = true; //init game disabled, we need enabled (override)
-
+  //warning: disable can lock it till next round. Do not use (and not used)
+  
+  //__init();
+  //gameEnabled = true; //init game disabled, we need enabled (override)
 #ifdef TRACE
   Serial.println("ProcessFinished exit");
 #endif

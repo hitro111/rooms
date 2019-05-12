@@ -1,0 +1,14 @@
+C:\Users\Oleg\source\repos\Technoquest.Api\Technoquest.Api\bin\Debug\netcoreapp2.2\Technoquest.Api.deps.json
+C:\Users\Oleg\source\repos\Technoquest.Api\Technoquest.Api\bin\Debug\netcoreapp2.2\Technoquest.Api.runtimeconfig.json
+C:\Users\Oleg\source\repos\Technoquest.Api\Technoquest.Api\bin\Debug\netcoreapp2.2\Technoquest.Api.runtimeconfig.dev.json
+C:\Users\Oleg\source\repos\Technoquest.Api\Technoquest.Api\bin\Debug\netcoreapp2.2\Technoquest.Api.dll
+C:\Users\Oleg\source\repos\Technoquest.Api\Technoquest.Api\obj\Debug\netcoreapp2.2\Technoquest.Api.csprojAssemblyReference.cache
+C:\Users\Oleg\source\repos\Technoquest.Api\Technoquest.Api\obj\Debug\netcoreapp2.2\Technoquest.Api.csproj.CoreCompileInputs.cache
+C:\Users\Oleg\source\repos\Technoquest.Api\Technoquest.Api\obj\Debug\netcoreapp2.2\Technoquest.Api.RazorAssemblyInfo.cache
+C:\Users\Oleg\source\repos\Technoquest.Api\Technoquest.Api\obj\Debug\netcoreapp2.2\Technoquest.Api.RazorAssemblyInfo.cs
+C:\Users\Oleg\source\repos\Technoquest.Api\Technoquest.Api\obj\Debug\netcoreapp2.2\Technoquest.Api.AssemblyInfoInputs.cache
+C:\Users\Oleg\source\repos\Technoquest.Api\Technoquest.Api\obj\Debug\netcoreapp2.2\Technoquest.Api.AssemblyInfo.cs
+C:\Users\Oleg\source\repos\Technoquest.Api\Technoquest.Api\obj\Debug\netcoreapp2.2\Technoquest.Api.RazorTargetAssemblyInfo.cache
+C:\Users\Oleg\source\repos\Technoquest.Api\Technoquest.Api\bin\Debug\netcoreapp2.2\Technoquest.Api.pdb
+C:\Users\Oleg\source\repos\Technoquest.Api\Technoquest.Api\obj\Debug\netcoreapp2.2\Technoquest.Api.dll
+C:\Users\Oleg\source\repos\Technoquest.Api\Technoquest.Api\obj\Debug\netcoreapp2.2\Technoquest.Api.pdb
